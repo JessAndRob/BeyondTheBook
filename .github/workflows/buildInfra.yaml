@@ -1,0 +1,43 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  working-directory: dbatoolsAPI\infra\
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2x
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init
+
+      # Validate terraform files
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+      
+      # Perform a security scan of the terraform code using checkov
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with: 
+          framework: terraform
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_administrator_login_password: ${{ secrets.SQL_ADMIN_PWD }}
+        run: terraform apply -auto-approve

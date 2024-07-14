@@ -40,6 +40,7 @@ jobs:
 
       - name: Terraform Plan
         id: tf-plan
+        working-directory: dbatoolsAPI/infra/
         run: |
           ls
           export exitcode=0

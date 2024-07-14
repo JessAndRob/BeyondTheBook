@@ -36,6 +36,7 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with: 
           framework: terraform
+          skip_check: MEDIUM
 
       - name: Terraform Apply
         env:

@@ -33,12 +33,14 @@ resource "azurerm_resource_group" "rg" {
 
 # create a sql server with a database that is a sample of adventureworks
 resource "azurerm_mssql_server" "sql" {
-  name                         = var.sql_server_name
-  resource_group_name          = azurerm_resource_group.rg.name
-  location                     = azurerm_resource_group.rg.location
-  version                      = "12.0"
-  administrator_login          = var.administrator_login
-  administrator_login_password = var.administrator_login_password
+  name                          = var.sql_server_name
+  resource_group_name           = azurerm_resource_group.rg.name
+  location                      = azurerm_resource_group.rg.location
+  version                       = "12.0"
+  administrator_login           = var.administrator_login
+  administrator_login_password  = var.administrator_login_password
+  minimum_tls_version           = "1.2"
+  public_network_access_enabled = false
   tags = {
     environment = "dev"
   }
@@ -61,6 +63,12 @@ resource "azurerm_storage_account" "sa" {
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
+  blob_properties {
+    delete_retention_policy {
+      days = 7
+    }
+  }
   tags = {
     environment = "dev"
   }
@@ -73,6 +81,7 @@ resource "azurerm_service_plan" "plan" {
   os_type             = "Linux"
   sku_name            = "Y1"
   location            = azurerm_resource_group.rg.location
+
   tags = {
     environment = "dev"
   }
@@ -80,12 +89,14 @@ resource "azurerm_service_plan" "plan" {
 
 # create a PowerShell function app
 resource "azurerm_linux_function_app" "func" {
-  name                       = var.function_app_name
-  location                   = azurerm_resource_group.rg.location
-  resource_group_name        = azurerm_resource_group.rg.name
-  service_plan_id            = azurerm_service_plan.plan.id
-  storage_account_name       = azurerm_storage_account.sa.name
-  storage_account_access_key = var.storage_account_access_key
+  name                          = var.function_app_name
+  location                      = azurerm_resource_group.rg.location
+  resource_group_name           = azurerm_resource_group.rg.name
+  service_plan_id               = azurerm_service_plan.plan.id
+  storage_account_name          = azurerm_storage_account.sa.name
+  storage_account_access_key    = var.storage_account_access_key
+  public_network_access_enabled = false
+  https_only                    = true
   site_config {
   }
   tags = {

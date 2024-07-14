@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  working-directory: dbatoolsAPI\infra\
+  working-directory: dbatoolsAPI/infra/
 
 jobs:
   terraform-plan:

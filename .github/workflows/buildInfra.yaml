@@ -5,11 +5,11 @@ on:
     branches:
       - main
 
-env:
-  working-directory: dbatoolsAPI/infra/
-
 jobs:
   terraform-plan:
+    defaults:
+      run:
+        working-directory: dbatoolsAPI/infra/
     runs-on: ubuntu-latest
 
     steps:
@@ -68,6 +68,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: [terraform-plan]
+    defaults:
+      run:
+        working-directory: dbatoolsAPI/infra/
+
 
     steps:
       - name: Checkout code

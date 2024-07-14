@@ -9,7 +9,7 @@ env:
   working-directory: dbatoolsAPI\infra\
 
 jobs:
-  terraform:
+  terraform-plan:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +38,50 @@ jobs:
           framework: terraform
           skip_check: CKV_AZURE_224,CKV_AZURE_229,CKV_AZURE_190,CKV_AZURE_33,CKV_AZURE_206,CKV_AZURE_212,CKV_AZURE_225,CKV2_AZURE_1,CKV2_AZURE_45,CKV2_AZURE_33,CKV_AZURE_23,CKV2_AZURE_27,CKV_AZURE_24,CKV2_AZURE_41,CKV_AZURE_59,CKV2_AZURE_47,CKV2_AZURE_40
 
+      - name: Terraform Plan
+        id: tf-plan
+        run: |
+          export exitcode=0
+          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else 
+            exit 0
+          fi
+
+      # Save plan to artifacts  
+      - name: Publish Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+  
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+
+      # Download saved plan from artifacts  
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          
       - name: Terraform Apply
         env:
           TF_VAR_administrator_login_password: ${{ secrets.SQL_ADMIN_PWD }}

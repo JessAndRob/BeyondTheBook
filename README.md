@@ -15,6 +15,10 @@ PASS 2024 Precon - dbatools: Beyond the book
     - Performance
         - Skills
         - Using Profiler
+        - Using Measure-Command
+    - Problem solving
+        - catching errors/exceptions
+        
 - Replication
     - Replication Overview
     - Replication with dbatools

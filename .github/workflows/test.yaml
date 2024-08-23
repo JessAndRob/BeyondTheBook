@@ -13,7 +13,7 @@ jobs:
     - name: Testing run-command
       shell: pwsh
       run: |
-        az vm run-command invoke -g rg-pass-prod-001 -n jumpy --command-id RunShellScript --scripts "$env:COMPUTERNAME; Get-DbaDatabase -SqlInstance sql1"
+        az vm run-command invoke -g rg-pass-prod-001 -n jumpy --command-id RunPowerShellScript --scripts "$env:COMPUTERNAME; Get-DbaDatabase -SqlInstance sql1"
 
 
 

@@ -6,6 +6,10 @@ jobs:
   run_command:
     runs-on: ubuntu-latest
     steps:
+    # Log into Azure
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Testing run-command
       shell: pwsh
       run: |

@@ -4,7 +4,7 @@ on:
 name: Run Command
 jobs:
   run_command:
-    runs-on: jumpy
+    runs-on: self-hosted
     steps:
     # Log into Azure
     - uses: azure/login@v2

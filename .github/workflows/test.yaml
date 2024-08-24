@@ -6,7 +6,7 @@ name: Run Command
 jobs:
   run_command:
     runs-on: self-hosted
-    if: contains(github.event.issue.labels.*.name, 'replication')
+    #if: contains(github.event.issue.labels.*.name, 'replication')
     steps:
     - name: Where am i
       shell: pwsh

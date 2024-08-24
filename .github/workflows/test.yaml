@@ -21,10 +21,11 @@ jobs:
       shell: pwsh
       run: |
         $results = '${{ toJSON(steps.parse.outputs.data) }}'
-        $results = $results | ConvertFrom-Json | Select-Object -expand article-name
+        $results = $results | ConvertFrom-Json
+
 
         $results
-        $results.text
+        #$results.text
 
     - name: Any dbatools?
       shell: pwsh

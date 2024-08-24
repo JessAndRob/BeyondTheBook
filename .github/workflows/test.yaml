@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch:
+
+name: Run Command
+jobs:
+  run_command:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Testing run-command
+      shell: pwsh
+      run: |
+        az vm run-command invoke -g MyResourceGroup -n jumpy --command-id RunShellScript --scripts "$env:COMPUTERNAME; Get-DbaDatabase -SqlInstance sql1"
+
+
+
+

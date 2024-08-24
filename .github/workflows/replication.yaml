@@ -4,9 +4,9 @@ on:
 
 name: Run Command
 jobs:
-  run_command:
+  add_article:
     runs-on: self-hosted
-    #if: contains(github.event.issue.labels.*.name, 'replication')
+    if: contains(github.event.issue.labels.*.name, 'replication')
     steps:
     - name: Where am i
       shell: pwsh
@@ -62,7 +62,6 @@ jobs:
         }
             
     - name: Close Issue
-      uses: peter-evans/close-issue@v3
-      with:
-        comment: |
-          Article added!
+      run: gh issue close --comment "Article added!" ${{ github.event.issue.number }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

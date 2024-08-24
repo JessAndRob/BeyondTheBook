@@ -20,7 +20,7 @@ jobs:
     - name: lets see what we got
       shell: pwsh
       run: |
-        $results = ${{ toJSON(steps.parse.outputs.data) }}
+        $results = '${{ toJSON(steps.parse.outputs.data) }}'
         $results.gettype()
         $results
 

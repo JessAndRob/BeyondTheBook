@@ -38,10 +38,10 @@ Describe "Environment ready for demos" -Tag docker{
 
     Context "There should be a database on sql1" {
         BeforeAll {
-            $db = Get-DbaDatabase -SqlInstance sql1 -ExcludeSystem -Database AdventureWorksLT2022
+            $db = Get-DbaDatabase -SqlInstance sql1 -ExcludeSystem -Database AdventureWorks2022
         }
-        It "AdventureWorksLT2022 exists on sql1" {
-            $db.Name | Should Be 'AdventureWorksLT2022'
+        It "AdventureWorks2022 exists on sql1" {
+            $db.Name | Should Be 'AdventureWorks2022'
             $db.Status | Should Be 'Normal'
         }
     }
@@ -52,6 +52,15 @@ Describe "Environment ready for demos" -Tag docker{
         }
         It "sql2 should have no databases" {
             $dbs | Should BeNullOrEmpty
+        }
+    }
+
+    Context "SQL Services running as JessAndRob\Sqladmin" {
+        BeforeAll {
+            $services = get-dbaservice -ComputerName sql1 -ServiceName MSSQLSERVER, SQLSERVERAGENT
+        }
+        It "StartName should be JessAndRob\sqladmin" {
+            $services.StartName | Should Be 'JessAndRob\sqladmin'
         }
     }
     

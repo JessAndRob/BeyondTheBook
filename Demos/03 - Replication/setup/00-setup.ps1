@@ -1,120 +1,48 @@
-# import the module 
-#Import-Module C:\Github\jpomfret\dbatools\dbatools.psd1 -Force
-Get-Module dbatools -ListAvailable
-
-Import-Module dbatools
-
-Write-Output 'starting'
-
-
-# smo defaults
-Set-DbatoolsConfig -FullName sql.connection.encrypt -Value optional
-Set-DbatoolsConfig -FullName sql.connection.trustcert -Value $true
-
-# make sure services are up
-Get-Service MSSQLSERVER, SQLSERVERAGENT -ComputerName sql1,sql2 | Start-Service
-
-# tear down any repl
-# remove subscriptions
-$sub = @{
-    SqlInstance           = 'sql1'
-    Database              = 'AdventureWorksLT2022'
-    SubscriptionDatabase  = 'AdventureWorksLT2022'
-    SubscriberSqlInstance = 'sql2'
-    PublicationName       = 'testPub'
+$install = @{
+    SqlInstance     = 'sql1','sql2'
+    Version         = '2022'
+    Feature         = 'Engine','Replication'
+    Path            = '\\jumpy\installationmedia'
+    Credential      = $cred
+    AdminAccount    = 'sqlbits2024\sqladmin'
+    Verbose         = $true
+    Confirm         = $false
 }
-Remove-DbaReplSubscription @sub
+Install-DbaInstance @install
 
-$sub = @{
-    SqlInstance           = 'sql1'
-    Database              = 'AdventureWorksLT2022'
-    SubscriptionDatabase  = 'AdventureWorksLT2022Merge'
-    SubscriberSqlInstance = 'sql2'
-    PublicationName       = 'Mergey'
+$install = @{
+    SqlInstance     = 'sql2'
+    Version         = '2022'
+    Feature         = 'Engine','Replication'
+    Path            = '\\jumpy\installationmedia'
+    Credential      = $cred
+    AdminAccount    = 'sqlbits2024\sqladmin'
+    Verbose         = $true
+    Confirm         = $false
+
 }
-Remove-DbaReplSubscription @sub
+Install-DbaInstance @install
 
-$sub = @{
-    SqlInstance           = 'sql1'
-    Database              = 'AdventureWorksLT2022'
-    SubscriptionDatabase  = 'AdventureWorksLT2022Snap'
-    SubscriberSqlInstance = 'sql2'
-    PublicationName       = 'snappy'
-}
-Remove-DbaReplSubscription @sub
+## firewall 
+New-NetFirewallRule -Name 'SQL Server In' -DisplayName 'SQL Server In ' -Direction Inbound -Protocol TCP -LocalPort 1433 -CimSession sql1,sql2
 
-# remove an article
-$article = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Publication = 'testpub'
-    Schema      = 'salesLT'
-    Name        = 'customer'
-}
-Remove-DbaReplArticle @article
+# Set the configurations to old defaults
+Set-DbatoolsConfig -FullName sql.connection.trustcert -Value $true -PassThru | Register-DbatoolsConfig
+Set-DbatoolsConfig -FullName sql.connection.encrypt -Value $false -PassThru | Register-DbatoolsConfig
 
-# remove an article
-$article = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Publication = 'Mergey'
-    Schema      = 'salesLT'
-    Name        = 'product'
-}
-Remove-DbaReplArticle @article
-
-# remove an article
-$article = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Publication = 'snappy'
-    Schema      = 'salesLT'
-    Name        = 'address'
-}
-Remove-DbaReplArticle @article
-
-## remove publications
-$pub = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Name        = 'TestPub'
-    Confirm     = $false
-}
-Remove-DbaReplPublication @pub
-
-$pub = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Name        = 'Snappy'
-    Confirm     = $false
-}
-Remove-DbaReplPublication @pub
-
-$pub = @{
-    SqlInstance = 'sql1'
-    Database    = 'AdventureWorksLT2022'
-    Name        = 'Mergey'
-    Confirm     = $false
-}
-Remove-DbaReplPublication @pub
+## connect test
+Connect-DbaInstance -SqlInstance sql1,sql2
 
 
-# disable publishing 
-Disable-DbaReplPublishing -SqlInstance sql1 -force
+# need to give full control for sqladmin@sqlbits2024.io to repldata folder here:
+# gave to everyone because sql1\sql2 aren't running under a service account 
+# \\sql1\c$\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL
 
-# disable distribution
-Disable-DbaReplDistributor -SqlInstance  sql1
+$cred = get-credential password
 
-# remove databases on sql2
-Get-DbaDatabase -SqlInstance sql2 -ExcludeSystem -ExcludeDatabase ReportServer, ReportServerTempDB | 
-Remove-DbaDatabase -Confirm:$false 
+Update-DbaServiceAccount -ComputerName sql1  -ServiceName MSSQLSERVER, SQLSERVERAGENT  -Username JessAndRob\sqladmin -SecurePassword $cred.Password
+Update-DbaServiceAccount -ComputerName sql2  -ServiceName MSSQLSERVER, SQLSERVERAGENT  -Username JessAndRob\sqladmin -SecurePassword $cred.Password
 
-# run the tests
-Invoke-Pester .\demos\tests\demo.tests.ps1 -Output Detailed
-
-# reset config
-# smo defaults
-Set-DbatoolsConfig -FullName sql.connection.encrypt -Value mandatory
-Set-DbatoolsConfig -FullName sql.connection.trustcert -Value $false
-
-Remove-Module dbatools
+# also need a database
+Invoke-WebRequest -Uri https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2022.bak -OutFile \\sql1\c$\temp\AdventureWorks2022LT.bak
+Restore-DbaDatabase -SqlInstance sql1 -Path C:\temp\AdventureWorks2022LT.bak -UseDestinationDefaultDirectories

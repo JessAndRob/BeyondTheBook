@@ -23,10 +23,11 @@ jobs:
         $results = '${{ toJSON(steps.parse.outputs.data) }}'
         $results = $results | ConvertFrom-Json 
 
-
         $finalRes = $results | ConvertFrom-Json # not sure why we need 2?
-        $finalRes | FT
-        $finalRes.text
+
+        write-host ('Database: {0}' -f $finalRes.'database'.text)
+        write-host ('Schema: {0}' -f $finalRes.'schema'.text)
+        write-host ('Article: {0}' -f $finalRes.'article'.text)        
 
     - name: Any dbatools?
       shell: pwsh
@@ -39,15 +40,20 @@ jobs:
     - name: Add the article
       shell: pwsh
       run: |
+        $results = '${{ toJSON(steps.parse.outputs.data) }}'
+        $results = $results | ConvertFrom-Json 
+
+        $finalRes = $results | ConvertFrom-Json # not sure why we need to do this twice?
+
+        write-host ('Database: {0}' -f $finalRes.'database'.text)
+        write-host ('Schema: {0}' -f $finalRes.'schema'.text)
+        write-host ('Article: {0}' -f $finalRes.'article'.text)        
+        
         $article = @{
             SqlInstance = 'sql1'
             Database    = 'AdventureWorksLT2022'
-            Publication = 'testpub'
-            Schema      = 'salesLT'
-            Name        = 'address'
+            Publication = $finalRes.'database'.text
+            Schema      = $finalRes.'schema'.text
+            Name        = $finalRes.'article'.text
         }
         Add-DbaReplArticle @article
-
-      
-    
-

@@ -1,7 +1,7 @@
 name: Add an Article to Replication
 description: Add an article to replication
 title: "[Repl]: "
-labels: ["database","replication"]
+labels: "replication"
 body:
   - type: markdown
     attributes:

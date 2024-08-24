@@ -27,7 +27,8 @@ jobs:
         write-host '${{ steps.parse.outputs.payload }}'
 
         # Print the value of the "Name" field
-        write-host '${{ fromJson(steps.parse.outputs.payload)["Name"] }}'
+        #write-host '${{ fromJson(steps.parse.outputs.payload)["Name"] }}'
+
     - name: Any dbatools?
       shell: pwsh
       run: |

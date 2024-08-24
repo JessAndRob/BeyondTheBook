@@ -62,6 +62,7 @@ jobs:
         }
             
     - name: Close Issue
-      run: gh issue close --comment "Article added!" ${{ github.event.issue.number }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: peter-evans/close-issue@v3
+      with:
+        comment: |
+          Article added!

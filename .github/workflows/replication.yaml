@@ -62,7 +62,7 @@ jobs:
         }
             
     - name: Close Issue
-      run: gh issue close --comment "Article added!" ${{ github.event.issue.number }} -R JessandRob/PASS-BTB
+      run: gh issue comment $ISSUE
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

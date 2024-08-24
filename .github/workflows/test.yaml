@@ -1,0 +1,26 @@
+on:
+  workflow_dispatch:
+
+name: Run Command
+jobs:
+  run_command:
+    runs-on: self-hosted
+    steps:
+    - name: Where am i
+      shell: pwsh
+      run: |
+        pwd
+        ls
+    - name: Any dbatools?
+      shell: pwsh
+      run: |
+        Get-Module dbatools -ListAvailable
+    - name: Any databases
+      shell: pwsh
+      run: |
+        Get-DbaDatabase -SqlInstance sql1
+
+      
+
+    
+

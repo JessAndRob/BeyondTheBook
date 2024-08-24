@@ -21,7 +21,7 @@ jobs:
       shell: pwsh
       run: |
         $results = '${{ toJSON(steps.parse.outputs.data) }}'
-        $results = $results | ConvertFrom-Json
+        $results = $results | ConvertFrom-Json | ConvertFrom-Json # not sure why we need 2?
 
 
         $results
@@ -35,6 +35,17 @@ jobs:
       shell: pwsh
       run: |
         Get-DbaDatabase -SqlInstance sql1
+    - name: Add the article
+      shell: pwsh
+      run: |
+        $article = @{
+            SqlInstance = 'sql1'
+            Database    = 'AdventureWorksLT2022'
+            Publication = 'testpub'
+            Schema      = 'salesLT'
+            Name        = 'address'
+        }
+        Add-DbaReplArticle @article
 
       
     

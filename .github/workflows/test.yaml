@@ -29,14 +29,11 @@ jobs:
         write-host ('Schema: {0}' -f $finalRes.'schema'.text)
         write-host ('Article: {0}' -f $finalRes.'article'.text)        
 
-    - name: Any dbatools?
+    - name: Do we have dbatools?
       shell: pwsh
       run: |
         Get-Module dbatools -ListAvailable
-    - name: Any databases
-      shell: pwsh
-      run: |
-        Get-DbaDatabase -SqlInstance sql1
+
     - name: Add the article
       shell: pwsh
       run: |
@@ -48,7 +45,7 @@ jobs:
         write-host ('Database: {0}' -f $finalRes.'database'.text)
         write-host ('Schema: {0}' -f $finalRes.'schema'.text)
         write-host ('Article: {0}' -f $finalRes.'article'.text)        
-        
+
         $article = @{
             SqlInstance = 'sql1'
             Database    = 'AdventureWorksLT2022'

@@ -17,7 +17,12 @@ jobs:
       id: parse
       uses: zentered/issue-forms-body-parser@v2.0.0
   
-    - run: echo ${{ toJSON(steps.parse.outputs.data) }}
+    - name: lets see what we got
+      shell: pwsh
+      run: |
+        $results = ${{ toJSON(steps.parse.outputs.data) }}
+        $results.gettype()
+        $results
 
     - name: Any dbatools?
       shell: pwsh

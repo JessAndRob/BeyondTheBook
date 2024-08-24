@@ -47,12 +47,21 @@ jobs:
         Write-Host ('Publication: {0}' -f $finalRes.'publication'.text)
         Write-Host ('Schema: {0}' -f $finalRes.'schema'.text)
         Write-Host ('Article: {0}' -f $finalRes.'article'.text)        
-
-        $article = @{
-            SqlInstance = 'sql1'
-            Database    = $finalRes.'database'.text
-            Publication = $finalRes.'publication'.text
-            Schema      = $finalRes.'schema'.text
-            Name        = $finalRes.'article'.text
+        try {
+          $article = @{
+              SqlInstance     = 'sql1'
+              Database        = $finalRes.'database'.text
+              Publication     = $finalRes.'publication'.text
+              Schema          = $finalRes.'schema'.text
+              Name            = $finalRes.'article'.text
+              EnableException = $true
+            }
+            Add-DbaReplArticle @article
+        } catch {
+          Throw $_
         }
-        Add-DbaReplArticle @article
+            
+    - name: Close Issue
+      run: gh issue close --comment "Article added!" ${{ github.event.issue.number }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

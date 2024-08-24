@@ -1,16 +1,33 @@
 on:
-  workflow_dispatch:
+  issues:
+    types: [opened]
 
 name: Run Command
 jobs:
   run_command:
     runs-on: self-hosted
+    if: contains(github.event.issue.labels.*.name, 'replication')
     steps:
     - name: Where am i
       shell: pwsh
       run: |
         pwd
         ls
+    - name: Parse issue
+      id: parse
+      uses: onmax/issue-form-parser@v1.5
+      with:
+        issue_number: ${{ github.event.issue.number }}
+
+    # Examples on how to use the output
+    - name: Show parsed payload data
+      run: |
+        # Using the character `'` to prevent all characters enclosed within
+        # them from being treated as special characters (e.g. $ or `)
+        write-host '${{ steps.parse.outputs.payload }}'
+
+        # Print the value of the "Name" field
+        write-host '${{ fromJson(steps.parse.outputs.payload)["Name"] }}'
     - name: Any dbatools?
       shell: pwsh
       run: |
@@ -21,6 +38,5 @@ jobs:
         Get-DbaDatabase -SqlInstance sql1
 
       
-
     
 

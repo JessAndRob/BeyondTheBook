@@ -25,9 +25,10 @@ jobs:
 
         $finalRes = $results | ConvertFrom-Json # not sure why we need 2?
 
-        write-host ('Database: {0}' -f $finalRes.'database'.text)
-        write-host ('Schema: {0}' -f $finalRes.'schema'.text)
-        write-host ('Article: {0}' -f $finalRes.'article'.text)        
+        Write-Host ('Database: {0}' -f $finalRes.'database'.text)
+        Write-Host ('Publication: {0}' -f $finalRes.'publication'.text)
+        Write-Host ('Schema: {0}' -f $finalRes.'schema'.text)
+        Write-Host ('Article: {0}' -f $finalRes.'article'.text)        
 
     - name: Do we have dbatools?
       shell: pwsh
@@ -42,14 +43,15 @@ jobs:
 
         $finalRes = $results | ConvertFrom-Json # not sure why we need to do this twice?
 
-        write-host ('Database: {0}' -f $finalRes.'database'.text)
-        write-host ('Schema: {0}' -f $finalRes.'schema'.text)
-        write-host ('Article: {0}' -f $finalRes.'article'.text)        
+        Write-Host ('Database: {0}' -f $finalRes.'database'.text)
+        Write-Host ('Publication: {0}' -f $finalRes.'publication'.text)
+        Write-Host ('Schema: {0}' -f $finalRes.'schema'.text)
+        Write-Host ('Article: {0}' -f $finalRes.'article'.text)        
 
         $article = @{
             SqlInstance = 'sql1'
-            Database    = 'AdventureWorksLT2022'
-            Publication = $finalRes.'database'.text
+            Database    = $finalRes.'database'.text
+            Publication = $finalRes.'publication'.text
             Schema      = $finalRes.'schema'.text
             Name        = $finalRes.'article'.text
         }

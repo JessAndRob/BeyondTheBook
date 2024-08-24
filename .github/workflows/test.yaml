@@ -26,9 +26,6 @@ jobs:
         # them from being treated as special characters (e.g. $ or `)
         write-host '${{ steps.parse.outputs.payload }}'
 
-        # Print the value of the "Name" field
-        #write-host '${{ fromJson(steps.parse.outputs.payload)["Name"] }}'
-
     - name: Any dbatools?
       shell: pwsh
       run: |

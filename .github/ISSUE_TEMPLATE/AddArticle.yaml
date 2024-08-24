@@ -1,0 +1,16 @@
+name: Add an Article to Replication
+description: Add an article to replication
+title: "[Repl]: "
+labels: ["database","replication"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Let's add an article to replication on sql1.
+  - type: input
+    id: article
+    attributes:
+      label: Article Name
+      description: Article name?
+    validations:
+      required: true

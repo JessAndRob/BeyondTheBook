@@ -13,18 +13,11 @@ jobs:
       run: |
         pwd
         ls
-    - name: Parse issue
+    - name: Issue Forms Body Parser
       id: parse
-      uses: onmax/issue-form-parser@v1.5
-      with:
-        issue_number: ${{ github.event.issue.number }}
-
-    # Examples on how to use the output
-    - name: Show parsed payload data
-      run: |
-        # Using the character `'` to prevent all characters enclosed within
-        # them from being treated as special characters (e.g. $ or `)
-        write-host '${{ steps.parse.outputs.payload }}'
+      uses: zentered/issue-forms-body-parser@v2.0.0
+  
+    - run: echo ${{ toJSON(steps.parse.outputs.data) }}
 
     - name: Any dbatools?
       shell: pwsh

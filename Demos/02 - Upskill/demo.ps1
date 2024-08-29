@@ -89,6 +89,15 @@ $trace.Top50HitCount
 # what does profiler do?
 $trace.Events | Format-Table -AutoSize
 
-# lets do something more complicated
+# lets do something more complicated or do we use this to do the perf stuff
+
+
 
 # maybe read in the file list from the backup demo from the 01 session?
+
+# null compares and dbnull compares
+
+# 1) check for += assignments in PowerShell arrays and replace with .net collections
+# 2) look for bad runtime complexity - hashtable / keys > searching by where-object etc.
+
+# Using Hashsets for filtering unique; get rid of curly braces in Where-Object; using switch statement for filereading if no classes are allowed

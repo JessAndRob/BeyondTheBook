@@ -9,7 +9,7 @@ Return 'Oi, You may be an MVP but this is a demo, don''t run the whole thing, fo
 
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 # the new way
-Set-PSResourceRepository -Name PSGallery -InstallationPolicy Trusted
+Set-PSResourceRepository -Name PSGallery -Trusted
 
 # Install the module
 $modulename = 'dbatools'

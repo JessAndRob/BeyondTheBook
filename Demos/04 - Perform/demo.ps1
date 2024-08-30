@@ -15,6 +15,10 @@
 # remove unnecessary output
 
 <#
+from Jakub - The top 3 things that Profiler will show you. :) Typically += in a loop (before the fix), reading files without -Raw, and other IO you can do once and cache.
+#>
+
+<#
 Thats a getting the right answer rather than a perf increase but yes
 To ensure that PowerShell performs comparisons correctly, the $null element should be on the left side of the operator.
 
@@ -81,3 +85,94 @@ $arrayList = Trace-Script -ScriptBlock {
 
 $plusequals.TotalDuration.Milliseconds
 $arrayList.TotalDuration.Milliseconds
+
+
+$dbaInstance = Connect-DbaInstance -SqlInstance sql1
+
+$instance = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql1'
+
+$dbaInstance.gettype()
+$Instance.gettype()
+
+#clear out the default initialised fields
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $false)
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $false)
+
+$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
+
+
+$DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
+$DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
+
+$dbacommand = Trace-Script -ScriptBlock {
+    Get-DbaDatabase -SqlInstance sql1
+}
+$dbaquerycommand = Trace-Script -ScriptBlock {
+    Invoke-DbaQuery -SqlInstance sql1 -Database master -Query "SELECT name FROM sys.databases"
+}
+$smocommand = Trace-Script -ScriptBlock {
+    $instance.Databases.Name
+}
+
+$dbacommand.TotalDuration.TotalMilliseconds
+$dbaquerycommand.TotalDuration.TotalMilliseconds
+$smocommand.TotalDuration.TotalMilliseconds
+
+$instancesql3 = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql3'
+
+#clear out the default initialised fields
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Login], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Agent.Job], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.StoredProcedure], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Information], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Settings], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.LogFile], $false)
+$Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.DataFile], $false)
+
+$DatabaseInitFields = $Instancesql3.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
+
+
+$DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
+$DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
+
+
+
+$dbacommandsql3 = Trace-Script -ScriptBlock {
+    Get-DbaDatabase -SqlInstance sql3
+}
+$dbaquerycommandsql3 = Trace-Script -ScriptBlock {
+    Invoke-DbaQuery -SqlInstance sql3 -Database master -Query "SELECT name FROM sys.databases"
+}
+$smocommandsql3 = Trace-Script -ScriptBlock {
+    $instancesql3.Databases.Name
+}
+$normalinstancesql3 = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql3'
+$normalsmocommandsql3 = Trace-Script -ScriptBlock {
+    $normalinstancesql3.Databases.Name
+}
+
+$dbacommandsql3.TotalDuration.TotalMilliseconds
+$dbaquerycommandsql3.TotalDuration.TotalMilliseconds
+$normalsmocommandsql3.TotalDuration.TotalMilliseconds
+$smocommandsql3.TotalDuration.TotalMilliseconds
+
+
+
+                #Test-DbaMaxDop needs these because it checks every database as well
+                $DatabaseInitFields.Add("IsAccessible") | Out-Null # so we can check if its accessible
+                $DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
+                $DatabaseInitFields.Add("MaxDop ") | Out-Null # so we can check if its accessible
+                $DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
+                $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
+                $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
+
+                

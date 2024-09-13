@@ -1,32 +1,26 @@
 New-UDApp -Content {
+    Get-UDPage -Name server
 
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -Content {
             New-UDDataGrid -LoadRows {
-                $Data = @(
-                    @{ Name = 'Adam'; Number = Get-Random }
-                    @{ Name = 'Tom'; Number = Get-Random }
-                    @{ Name = 'Sarah'; Number = Get-Random }
-                )
+                $Data = Invoke-RestMethod -Uri http://localhost:5000/servers 
                 $Data | Out-UDDataGridData -Context $EventData -TotalRows $Rows.Length
             } -Columns @(
-                New-UDDataGridColumn -Field name
-                New-UDDataGridColumn -Field number
-            ) -AutoHeight $true
+                New-UDDataGridColumn -Field SqlInstance -render { 
+                    New-UDLink -Text $EventData.SqlInstance -Url "/server?instance=$($EventData.SqlInstance)"
+                }
+                New-UDDataGridColumn -Field VersionString
+                New-UDDataGridColumn -Field EngineEdition
+                New-UDDataGridColumn -Field Edition
+                New-UDDataGridColumn -Field HostDistribution
+                New-UDDataGridColumn -Field ButtonTest -Render {
+                    New-UDButton -Text "Test" -OnClick {
+                        Show-UDToast -Message "Test"
+                    }
+                }
+            ) -AutoHeight $true -AutoSizeColumns $true    
 
-        }
-        New-UDGrid -Item -ExtraSmallSize 6 -Content {
-            New-UDDataGrid -LoadRows {
-                $Data = Get-ComputerInfo | select OsName, CsModel
-                $Data | Out-UDDataGridData -Context $EventData -TotalRows $Rows.Length
-            } -Columns @(
-                New-UDDataGridColumn -Field OSName
-                New-UDDataGridColumn -Field CsModel
-            ) -AutoHeight $true -AutoSizeColumns $true
-
-        }
-        New-UDGrid -Item -ExtraSmallSize 6 -Content {
-            New-UDPaper -Content { "xs-6" } -Elevation 2
         }
         New-UDGrid -Item -ExtraSmallSize 3 -Content {
             New-UDPaper -Content { "xs-3" } -Elevation 2
@@ -41,9 +35,6 @@ New-UDApp -Content {
             New-UDPaper -Content { "xs-3" } -Elevation 2
         }
     }
-
-
-
 
 
 } -Navigation (

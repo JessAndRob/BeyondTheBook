@@ -84,22 +84,27 @@ Add-DbaServerRoleMember
 Set-DbaDbOwner
 Set-DbaMaxMemory
 
-Remove-dba
-
 #endregion
 
 #region More things
 
+# Jess and Rob - chat for a minute about the other params here
+# This will take about 30 seconds using how to find last exection time
+# (Get-History)[-1].EndExecutionTime - (Get-History)[-1].StartExecutionTime
+$dbs = Get-DbaDatabase -SqlInstance sql3 -ExcludeSystem
+
 #region - Importing data from csv (excels, etc)
-$database = "tempdb"
+$sqlInstance = "sql3"
+$database = Get-Random ($dbs.Name)
+Write-Output "We shall use $database"
 $table = "authors"
-$csvPath = "./demos/20/authors.csv"
+$csvPath = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors.csv"
 $delimitier = "|"
 
 # Import the csv file to a table into the database
 
 $splatImportCSV = @{
-	SqlInstance = "dbatools1"
+	SqlInstance = $sqlInstance
 	Database = $database
     Table = $table
     Path = $csvPath
@@ -111,7 +116,7 @@ Import-DbaCsv @splatImportCSV
 
 #Check if the data is there
 $splatInvokeQuery = @{
-	SqlInstance = "dbatools1"
+	SqlInstance = $sqlInstance
 	Database = $database
 	Query = "SELECT * FROM $table"
 }
@@ -121,10 +126,10 @@ Invoke-DbaQuery @splatInvokeQuery | Format-Table
 # Not impressed?
 # Let's check with a file that contains 200K rows
 
-$csvPathBigger = "./demos/20/authors_bigger.csv"
+$csvPathBigger = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors_bigger.csv"
 
 $splatImportCSV = @{
-	SqlInstance = "dbatools1"
+	SqlInstance = $sqlInstance
 	Database = $database
     Table = "$table-2"
     Path = $csvPathBigger
@@ -141,26 +146,32 @@ Import-DbaCsv @splatImportCSV
 
 #region multiple logins all at once
 ## Add Login (AD user/group)
+
+# THIS IS NOT HOW TO DO PASSWORDS IN PRODUCTION
+$securePassword = (Read-Host -Prompt "Enter the new password" -AsSecureString)
+
 $loginSplat = @{
-    SqlInstance    = 'dbatools1'
+    SqlInstance    = $sqlinstance
     Login          = "JessP"
     SecurePassword = $securePassword
 }
 New-DbaLogin @loginSplat
 
 ##	Add User
+
+$database = Get-Random ($dbs.Name)
 $userSplat = @{
-    SqlInstance = 'dbatools1'
+    SqlInstance = $sqlinstance
     Login       = "JessP"
-    Database    = "DatabaseAdmin"
+    Database    = $database
 }
 New-DbaDbUser @userSplat
 
 ##	Add to reader role
 $roleSplat = @{
-    SqlInstance = 'dbatools1'
+    SqlInstance = $sqlinstance
     User        = "JessP"
-    Database    = "DatabaseAdmin"
+    Database    = $database
     Role        = "db_datareader"
     Confirm     = $false
 }
@@ -169,16 +180,32 @@ Add-DbaDbRoleMember @roleSplat
 ##	Change password for SQL account
 $newPassword = (Read-Host -Prompt "Enter the new password" -AsSecureString)
 $pwdSplat = @{
-    SqlInstance    = 'dbatools1'
+    SqlInstance    = $sqlinstance
     Login          = "JessP"
     SecurePassword = $newPassword
 }
 Set-DbaLogin @pwdSplat
 
 # Read in logins from csv
+
+# RUN THE CODE FIRST AND THEN EXPLAIN.
+# THIS WILL TAKE A WHILE TO RUN
+
+# create the csv file
+$csv = 'C:\GitHub\PASS-BTB\Demos\01 - dbatools\genusers.csv'
+0..500 | ForEach-Object {
+    [PSCustomObject]@{
+        Server   = "sql3"
+        User     = "User$_"
+        Password = "Password$_"
+        Database = Get-Random ($dbs.Name)
+        Role     = Get-Random @("db_datareader","db_owner","db_datawriter")
+    }
+} | Export-Csv -Path $csv -NoTypeInformation
 ## PS4+ syntax!
-(Import-Csv ./demos/18/users.csv).foreach{
-    Write-Output "Adding $($psitem.User) on $($psitem.Server)"
+Import-Csv $csv | ForEach-Object {
+    $Message = "Adding {0} on {1} and to {2} as {3})" -f $psitem.User, $psitem.Server, $psitem.Database, $psitem.Role
+    Write-Output $Message
     $server = Connect-DbaInstance -SqlInstance $psitem.Server
     New-DbaLogin -SqlInstance $server -Login $psitem.User -Password ($psitem.Password | ConvertTo-SecureString -asPlainText -Force)
     New-DbaDbUser -SqlInstance $server -Login $psitem.User -Database $psitem.Database
@@ -203,25 +230,26 @@ Get-Command -Module dbatools -Verb Copy
 
 ## Get databases
 $datatbaseSplat = @{
-    SqlInstance   = 'dbatools1'
+    SqlInstance   = $sqlinstance
     ExcludeSystem = $true
-    OutVariable   = "dbs"        # OutVariable to also capture this to use later
+    OutVariable   = "just20dbs"        # OutVariable to also capture this to use later
 }
-Get-DbaDatabase @datatbaseSplat |
+Get-DbaDatabase @datatbaseSplat | Select-Object -First 20 |
 Select-Object Name, Status, RecoveryModel, Owner, Compatibility |
 Format-Table
 
 # Get Logins
 $loginSplat = @{
-    SqlInstance = 'dbatools1'
+    SqlInstance = $sqlinstance
 }
 Get-DbaLogin @loginSplat |
 Select-Object SqlInstance, Name, LoginType
 
+$sqlinstance2 = "sql2"
 # Get Processes
 $processSplat = @{
-    SqlInstance = 'dbatools2'
-    Database = $dbs.name
+    SqlInstance = $sqlinstance2
+    Database = $just20dbs.name
     ExcludeSystemSpids = $true
 }
 Get-DbaProcess @processSplat |
@@ -232,9 +260,9 @@ Get-DbaProcess @processSplat | Stop-DbaProcess
 
 ## Migrate the databases
 $migrateDbSplat = @{
-    Source        = 'dbatools1'
-    Destination   = 'dbatools2'
-    Database      = $dbs.name
+    Source        = $sqlinstance
+    Destination   = $sqlinstance2
+    Database      = $just20dbs.name
     BackupRestore = $true
     SharedPath    = '/shared'
     #SetSourceOffline        = $true
@@ -244,8 +272,8 @@ Copy-DbaDatabase @migrateDbSplat
 
 ## Set source dbs offline
 $offlineSplat = @{
-    SqlInstance = 'dbatools1'
-    Database    = "Northwind", "DatabaseAdmin"
+    SqlInstance = $sqlinstance
+    Database    = $just20dbs.name
     Offline     = $true
     Force       = $true
 }
@@ -253,12 +281,12 @@ Set-DbaDbState @offlineSplat
 
 ## upgrade compat level & check all is ok
 $compatSplat = @{
-    SqlInstance = 'dbatools2'
+    SqlInstance = $sqlinstance2
 }
 Get-DbaDbCompatibility @compatSplat |
 Select-Object SqlInstance, Database, Compatibility
 
-$compatSplat.Add('Database', 'Northwind')
+$compatSplat.Add($just20dbs.name) # need dbatools 2.0 for 160
 $compatSplat.Add('Compatibility', '160') # need dbatools 2.0 for 160
 
 Set-DbaDbCompatibility @compatSplat
@@ -270,7 +298,7 @@ Set-DbaDbCompatibility @compatSplat
 # sp_updatestats
 # sp_refreshview against all user views
 $upgradeSplat = @{
-    SqlInstance = 'dbatools2'
+    SqlInstance = $sqlinstance2
     Database    = "Pubs"
 }
 Invoke-DbaDbUpgrade @upgradeSplat -Force

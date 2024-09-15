@@ -1,0 +1,101 @@
+parameters:
+- name: Owner
+  type: string
+  default: Jess
+
+trigger:
+- main
+
+stages:
+  - stage: deploy
+    displayName: 'Deploy SQL'
+    pool: default
+    jobs:
+      - job: runSql
+        workspace:
+          clean: all
+        steps:
+        - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+          fetchDepth: 0   # we need all history to get the last commit
+        - task: PowerShell@2
+          name: GetChangedFiles
+          inputs:
+            targetType: 'inline'
+            script: |
+              $files = @()
+
+              # Get the current commit hash
+              $currentCommit = git rev-parse HEAD
+
+              # Get the commit message
+              $commitMessage = git log -1 --pretty=%B
+
+              # Check if this is a merge commit
+              $isMergeCommit = git rev-parse --verify --quiet HEAD^2
+
+              if ($isMergeCommit) {
+                  Write-Host "This is a merge commit. Comparing with the first parent."
+                  $changedFiles = git diff --name-only HEAD^ HEAD
+              } elseif ($commitMessage -match "Merged PR") {
+                  Write-Host "This appears to be a squash-merged PR. Comparing with the previous commit on main."
+                  git checkout origin/main
+                  git pull origin main
+                  $previousCommit = git rev-parse HEAD
+                  git checkout $currentCommit
+                  $changedFiles = git diff --name-only $previousCommit $currentCommit
+              } else {
+                  Write-Host "This appears to be a direct commit. Comparing with the previous commit."
+                  $changedFiles = git diff --name-only HEAD^ HEAD
+              }
+
+              $changedFiles | ForEach-Object {
+
+                # only care if it's a .sql file
+                if([System.IO.Path]::GetExtension($_) -eq '.sql') {
+                  $Parent = Split-Path -Path $_ -Parent
+
+                  $DirectoryName = if ( [string]::IsNullOrEmpty($Parent) ) {'/'} else {$Parent}
+
+                  $files += [pscustomobject]@{
+                    BaseName = [System.IO.Path]::GetFileNameWithoutExtension($_)
+                    DirectoryName = $DirectoryName
+                    Extension = [System.IO.Path]::GetExtension($_)
+                    FullName = $_
+                    Name = Split-Path -Path $_ -Leaf
+                  }
+                } else {
+                  Write-Host "Skipping $_"
+                }
+
+              }
+              $files
+
+              # set files so we can use it in next steps as json file
+              $files | ConvertTo-Json | Out-File -FilePath $(Build.SourcesDirectory)/changedFiles.json
+
+        - task: PowerShell@2
+          name: DeploySQL
+          inputs:
+            targetType: 'inline'
+            script: |
+              # get files
+              $files = Get-Content $(Build.SourcesDirectory)/changedFiles.json | ConvertFrom-Json
+
+              $null = Set-DbatoolsInsecureConnection
+
+              $securePassword = ('dbatools.IO' | ConvertTo-SecureString -asPlainText -Force)
+              $credential = New-Object System.Management.Automation.PSCredential('sqladmin', $securePassword)
+
+              if ($files) {
+                $files | Sort-Object FullName | Foreach-Object {
+                  try {
+                    Write-Host "Deploying $($_.FullName)"
+                    Invoke-DbaQuery -SqlInstance localhost -SqlCredential $credential -Database 'master' -File $($_.FullName) -EnableException
+                  } catch {
+                    Write-Host "Failed to deploy $($_.FullName)"
+                    Write-Host $_.Exception.Message
+                  }
+                }
+              } else {
+                Write-Host "No files to deploy"
+              }

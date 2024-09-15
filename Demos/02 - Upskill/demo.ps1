@@ -8,7 +8,7 @@ function prompt {
 }
 
 function prompt {
-    Write-Host "It is $(Get-Date -Format HH:mm:sss)" -NoNewline
+    Write-Host "It is $(Get-Date -Format HH:mm:sss)  " -NoNewline
 }
 
 Start-Sleep -Seconds 3
@@ -27,7 +27,7 @@ Start-Sleep -Seconds 3
 
 # well thats a bit better
 
-# ytou could use the dbatools prompt https://dbatools.io/prompt/
+# you could use the dbatools prompt https://dbatools.io/prompt/
 # if you have dbatools
 function Prompt {
     Write-Host "[" -NoNewline

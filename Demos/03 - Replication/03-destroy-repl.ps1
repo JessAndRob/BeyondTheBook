@@ -1,30 +1,10 @@
-# remove subscriptions
+# remove the subscription
 $sub = @{
     SqlInstance           = 'sql1'
     Database              = 'AdventureWorksLT2022'
     SubscriptionDatabase  = 'AdventureWorksLT2022'
     SubscriberSqlInstance = 'sql2'
     PublicationName       = 'testPub'
-}
-Remove-DbaReplSubscription @sub
-
-$sub = @{
-    SqlInstance           = 'sql1'
-    Database              = 'AdventureWorksLT2022'
-    SubscriptionDatabase  = 'AdventureWorksLT2022Merge'
-    SubscriberSqlInstance = 'sql2'
-    PublicationName       = 'Mergey'
-    Confirm               = $false
-}
-Remove-DbaReplSubscription @sub
-
-$sub = @{
-    SqlInstance           = 'sql1'
-    Database              = 'AdventureWorksLT2022'
-    SubscriptionDatabase  = 'AdventureWorksLT2022Snap'
-    SubscriberSqlInstance = 'sql2'
-    PublicationName       = 'snappy'
-    Confirm               = $false
 }
 Remove-DbaReplSubscription @sub
 
@@ -40,26 +20,6 @@ Remove-DbaReplSubscription @sub
     }
     Remove-DbaReplArticle @article
 
-    # remove an article
-    $article = @{
-        SqlInstance = 'sql1'
-        Database    = 'AdventureWorksLT2022'
-        Publication = 'Mergey'
-        Schema      = 'salesLT'
-        Name        = 'product'
-    }
-    Remove-DbaReplArticle @article
-
-    # remove an article
-    $article = @{
-        SqlInstance = 'sql1'
-        Database    = 'AdventureWorksLT2022'
-        Publication = 'snappy'
-        Schema      = 'salesLT'
-        Name        = 'address'
-    }
-    Remove-DbaReplArticle @article
-
 # We can also use piping
 # using the -WhatIf parameter
 Get-DbaReplArticle -SqlInstance sql1 | Remove-DbaReplArticle -WhatIf
@@ -67,7 +27,7 @@ Get-DbaReplArticle -SqlInstance sql1 | Remove-DbaReplArticle -WhatIf
 # and run it for real
 Get-DbaReplArticle -SqlInstance sql1 | Remove-DbaReplArticle
 
-## remove publications
+## remove publication
     $pub = @{
         SqlInstance = 'sql1'
         Database    = 'AdventureWorksLT2022'
@@ -75,23 +35,7 @@ Get-DbaReplArticle -SqlInstance sql1 | Remove-DbaReplArticle
     }
     Remove-DbaReplPublication @pub
 
-    $pub = @{
-        SqlInstance = 'sql1'
-        Database    = 'AdventureWorksLT2022'
-        Name        = 'Snappy'
-        Confirm     = $false
-    }
-    Remove-DbaReplPublication @pub
-    
-    $pub = @{
-        SqlInstance = 'sql1'
-        Database    = 'AdventureWorksLT2022'
-        Name        = 'Mergey'
-        Confirm     = $false
-    }
-    Remove-DbaReplPublication @pub
-
-# remove all the publications with piping
+# remove publication with piping
 Get-DbaReplPublication -SqlInstance sql1 | Remove-DbaReplPublication
 
 # disable publishing

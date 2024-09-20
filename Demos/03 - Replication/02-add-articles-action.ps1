@@ -4,7 +4,8 @@
 https://github.com/organizations/JessAndRob/settings/actions/runners/new?arch=x64&os=win
 
 # Create a folder under the drive root
-mkdir actions-runner; cd actions-runner
+Set-Location c:\
+mkdir actions-runner; Set-Location actions-runner
 
 # Download the latest runner package
 Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.319.1/actions-runner-win-x64-2.319.1.zip -OutFile actions-runner-win-x64-2.319.1.zip
@@ -16,7 +17,7 @@ if((Get-FileHash -Path actions-runner-win-x64-2.319.1.zip -Algorithm SHA256).Has
 Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.319.1.zip", "$PWD")
 
 # Create the runner and start the configuration experience
-./config.cmd --url https://github.com/JessAndRob --token ** # get this from the url above
+./config.cmd --url https://github.com/JessAndRob --token *** # get this from the url above
 
 # Run it!
 ./run.cmd
@@ -31,8 +32,22 @@ code .\.github\ISSUE_TEMPLATE\AddArticle.yaml
 code .\.github\workflows\replication.yaml
 
 ## GO CREATE AN ISSUE and watch the workflow
+    # Database: AdventureWorksLT2022
+    # Publication: testPub
+    # Schema: SalesLT
+    # Article: Product
 
 ## check on the articles
 Get-DbaReplArticle -SqlInstance sql1 -Publication testPub | Format-Table
 
 ## look at replication monitor
+
+<#
+TODO: fix last step of action to close the issue
+
+Run gh issue close 15 -R JessAndRob/PASS-BTB
+  
+GraphQL: Could not resolve to an issue or pull request with the number of 15. (repository.issue)
+Error: Process completed with exit code 1.
+
+#>

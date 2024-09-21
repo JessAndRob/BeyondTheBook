@@ -5,4 +5,4 @@
 - VSCode extensions
     - PowerShell
     - PowerShell Universal
-- run this script - C:\GitHub\PASS-BTB\Demos\03 - Replication\setup\00-setup.ps1
+- increase jumpy power!

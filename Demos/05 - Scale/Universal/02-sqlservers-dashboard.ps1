@@ -8,7 +8,10 @@ $Pages += New-UDPage -Name 'SQLInstances' -Content {
             $Data = Invoke-RestMethod -Uri http://localhost:5000/SqlInstances/GetSqlInstances
 
             $Columns = @(
-                New-UDTableColumn -Property SqlInstance -Title "SQL Instance" -render {New-UDLink -Text $EventData.SqlInstance -Url "../db"}
+                New-UDTableColumn -Property SqlInstance -Title "SQL Instance" -render {New-UDLink -Text $EventData.SqlInstance -OnClick {
+                    $page:instance = $EventData.SqlInstance
+                    Invoke-UDRedirect -Url '/databases'
+                } }
                 New-UDTableColumn -Property VersionString -Title "Version"
                 New-UDTableColumn -Property EngineEdition -Title "Engine Edition"
                 New-UDTableColumn -Property Edition -Title "Edition"
@@ -17,13 +20,13 @@ $Pages += New-UDPage -Name 'SQLInstances' -Content {
             New-UDTable -Data $Data -Columns $Columns
         }
     }
-}
-$Pages += New-UDPage -Name 'Databases' -url '/db' -Content {
-    New-UDTypography -Text 'Databases'
+} -Icon "fas fa-server"
+$Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
+    New-UDTypography -Text ('Databases for {0}' -f $page:instance) -Variant "h3" 
+    $body = [PSCustomObject]@{ SqlInstance = $page:instance } | ConvertTo-Json
+    $Data = Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body $body -ContentType 'application/json'
 
-    $Data = Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body '{"sqlinstance":"sql1"}' -ContentType 'application/json'
-
-            $Columns = @(
+           $Columns = @(
                 New-UDTableColumn -Property SqlInstance -Title "SQL Instance"
                 New-UDTableColumn -Property Name -Title "Name"
                 New-UDTableColumn -Property Status -Title "Status"
@@ -35,12 +38,16 @@ $Pages += New-UDPage -Name 'Databases' -url '/db' -Content {
                     New-UDButton -Text "Backup" -OnClick {
                         Show-UDToast -Message "Starting backup for $($EventData.Name)"
                         $body = ("`"{0}`":`"{1}`",`"{2}`":`"{3}`"" -f 'SqlInstance', $EventData.SqlInstance, 'Database', $EventData.Name)
-                        Invoke-RestMethod -Uri "http://localhost:5000/Databases/Backup" -Method Post -Body "{ $body }" -ContentType 'application/json'
+                        $backup = Invoke-RestMethod -Uri "http://localhost:5000/Databases/Backup" -Method Post -Body "{ $body }" -ContentType 'application/json'
+                        if($backup.BackupComplete) {
+                            Show-UDToast -Duration 3000 -Icon "fas fa-copy" -Message "Backup completed successfully for $($EventData.Name) at $($backup.End)."
+                        }
                     }
                 }
-            )
-            New-UDTable -Data $Data -Columns $Columns
+           )
+          New-UDTable -Data $Data -Columns $Columns -ShowPagination -PageSize 10
 
-}
+} -Icon "fas fa-database"
+
 New-UDApp -Pages $Pages -Title 'SQL Instance Dashboard'
 

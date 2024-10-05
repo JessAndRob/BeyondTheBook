@@ -127,6 +127,10 @@ $smocommand.TotalDuration.TotalMilliseconds
 
 $instancesql3 = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql3'
 
+
+## TODO - this could be the start of scale
+
+
 #clear out the default initialised fields
 $Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Server], $false)
 $Instancesql3.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $false)
@@ -175,4 +179,3 @@ $smocommandsql3.TotalDuration.TotalMilliseconds
                 $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
                 $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
 
-                

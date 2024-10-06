@@ -1,3 +1,5 @@
+# Needs to have the logins set first 
+# INFRA/wingetPass.ps1
 Set-DbatoolsInsecureConnection
 $uri = 'https://taylor-swift-api.sarbo.workers.dev/songs'
 $songs = Invoke-RestMethod -Uri $uri

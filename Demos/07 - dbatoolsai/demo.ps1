@@ -1,23 +1,20 @@
 Start-Process https://github.com/potatoqualitee/dbatools.ai
 Install-Module dbatools.ai
+Install-Module finetuna
 
-Invoke-WebRequest -Uri https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorksLT2022.bak -OutFile \\sql1\c$\temp\AdventureWorks2022LT.bak
-Invoke-WebRequest -Uri https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorks2022.bak -OutFile \\sql1\c$\temp\AdventureWorks2022.bak
-Restore-DbaDatabase -SqlInstance sql1 -Path C:\temp\AdventureWorks2022.bak -UseDestinationDefaultDirectories
+$env:OPENAI_API_KEY = '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'
 
-$env:OPENAI_API_KEY = ''
-
-Get-DbaDatabase -SqlInstance sql1  -Database AdventureWorks2022 | New-DbaiAssistant -Name gpt4o-mini  -Description on -Model gpt-4o-mini-2024-07-18
+Get-DbaDatabase -SqlInstance sql1  -Database AdventureWorks2022 | New-DbaiAssistant -Name gpt4o-mini_1  -Description on -Model gpt-4o-mini
 
 $PSDefaultParameterValues =@{
     "Invoke-DbaiQuery:SqlInstance" = "sql1"
     "Invoke-DbaiQuery:Database" = "AdventureWorks2022"
-    "Invoke-DbaiQuery:AssistantName" = "gpt4o-mini"
-    "Invoke-DbatoolsAI:AssistantName" = "gpt4o-mini"
+    "Invoke-DbaiQuery:AssistantName" = "gpt4o-mini_1"
+    "Invoke-DbatoolsAI:AssistantName" = "gpt4o-mini_1"
 }
 
 
-Invoke-DbaiQuery  -Message "What questions can I ask about the database" 
+Invoke-DbaiQuery  -Message "What questions can I ask about the database" -SqlInstance sql1  -Database AdventureWorks2022
 
 dbai what questions can i ask about the database
 

@@ -125,3 +125,5 @@ $Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
 
 New-UDApp -Pages $Pages -Title 'SQL Instance Dashboard'
 
+
+# https://blog.ironmansoftware.com/universal-dashboard-server-side-table/

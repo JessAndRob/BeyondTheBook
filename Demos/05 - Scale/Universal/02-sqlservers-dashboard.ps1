@@ -58,17 +58,16 @@ $Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
 
     New-UDDynamic -Id 'databases' -Content {
         if ($page:instance) {
-            $body = [PSCustomObject]@{ SqlInstance = $page:instance } | ConvertTo-Json
-            $Data = Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body $body -ContentType 'application/json'
-
+            $bodyInstance = [PSCustomObject]@{ SqlInstance = $page:instance } | ConvertTo-Json
+            
             $Columns = @(
-                New-UDTableColumn -Property SqlInstance -Title "SQL Instance"
-                New-UDTableColumn -Property Name -Title "Name"
-                New-UDTableColumn -Property Status -Title "Status"
-                New-UDTableColumn -Property Compatibility -Title "Compatibility"
-                New-UDTableColumn -Property LastFullBackup -Title "Last Full Backup"
-                New-UDTableColumn -Property LastDiffBackup -Title "Last Diff Backup"
-                New-UDTableColumn -Property LastLogBackup -Title "Last Log Backup"
+                New-UDTableColumn -Property SqlInstance -Title "SQL Instance" -ShowSort
+                New-UDTableColumn -Property Name -Title "Name" -ShowSort
+                New-UDTableColumn -Property Status -Title "Status" -ShowSort
+                New-UDTableColumn -Property Compatibility -Title "Compatibility" -ShowSort
+                New-UDTableColumn -Property LastFullBackup -Title "Last Full Backup" -ShowSort
+                New-UDTableColumn -Property LastDiffBackup -Title "Last Diff Backup" -ShowSort
+                New-UDTableColumn -Property LastLogBackup -Title "Last Log Backup" -ShowSort
                 New-UDTableColumn -Property Backup -Render {
                     New-UDButton -Text "Backup" -OnClick {
                         Show-UDToast -Message "Starting backup for $($EventData.Name)"
@@ -83,7 +82,43 @@ $Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
                     }
                 }
             )
-            New-UDTable -Data $Data -Columns $Columns -ShowPagination -PageSize 10
+            #New-UDTable -Data $Data -Columns $Columns -ShowPagination -PageSize 10
+
+            New-UDTable -Title 'dbs' -LoadData {
+                $TableData = ConvertFrom-Json $Body
+
+                <# $Body will contain
+                    filters: []
+                    orderBy: undefined
+                    orderDirection: ""
+                    page: 0
+                    pageSize: 5
+                    properties: (2) ["name", "host"]
+                    search: ""
+                    totalCount: 0
+                #>
+
+                $OrderBy = $TableData.orderby.field
+                if ($OrderBy -eq $null) {
+                    $Orderby = 'Name'
+                }
+
+                $OrderDirection = $TableData.OrderDirection
+                if ($OrderDirection -eq $null)
+                {
+                    $OrderDirection = 'asc'
+                }
+                if($OrderDirection -eq 'desc') {
+                    $desc = $true
+                } else {
+                    $desc = $false
+                }
+                
+                $Data = (Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body $bodyInstance -ContentType 'application/json') |
+                Sort-Object $OrderBy -Descending:$desc 
+
+                $Data | Out-UDTableData -Page $TableData.page -TotalCount $Data.Count -Properties $TableData.properties
+            } -Columns $Columns -ShowSort -ShowPagination -PageSize 10
         }
     }
 } -Icon "fas fa-database"

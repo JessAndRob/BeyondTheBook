@@ -2,7 +2,7 @@ Start-Process https://github.com/potatoqualitee/dbatools.ai
 Install-Module dbatools.ai
 Install-Module finetuna
 
-$env:OPENAI_API_KEY = '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'
+$env:OPENAI_API_KEY = 'Just A Fake KEY here'
 
 Get-DbaDatabase -SqlInstance sql1  -Database AdventureWorks2022 | New-DbaiAssistant -Name gpt4o-mini_1  -Description on -Model gpt-4o-mini
 

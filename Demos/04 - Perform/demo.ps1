@@ -1,19 +1,3 @@
-# use t-sql sometimes
-
-# use $null =
-
-# use pwsh
-
-# use parallel
-
-# profiler demos for all of these
-
-# use smo but with the dbachecks magic
-
-# filter left
-
-# remove unnecessary output
-
 <#
 from Jakub - The top 3 things that Profiler will show you. :) Typically += in a loop (before the fix), reading files without -Raw, and other IO you can do once and cache.
 #>
@@ -179,3 +163,18 @@ $smocommandsql3.TotalDuration.TotalMilliseconds
                 $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
                 $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
 
+# use t-sql sometimes
+
+# use $null =
+
+# use pwsh
+
+# use parallel
+
+# profiler demos for all of these
+
+# use smo but with the dbachecks magic
+
+# filter left
+
+# remove unnecessary output

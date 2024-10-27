@@ -5,7 +5,7 @@ Install-Module PSFabricTools
 ## https://github.com/data-masterminds/psfabrictools
 
 ## Set the configuration
-Set-PSFabricConfig -WorkspaceGUID 'GUID-GUID-GUID-GUID' -DataWarehouseGUID 'GUID-GUID-GUID-GUID'
+Set-PSFabricConfig -WorkspaceGUID 'workspace-guid-guid-guid-guid' -DataWarehouseGUID 'dwh-GUID-GUID-GUID-GUID'
 
 ## This has a dependency on the PSFramework module - we saw it earlier for config and logging
 
@@ -15,7 +15,7 @@ Set-PSFabricConfig -WorkspaceGUID 'GUID-GUID-GUID-GUID' -DataWarehouseGUID 'GUID
 Get-PSFabricRecoveryPoint
 
 # If you haven't set the config you can pass in those parameters at run time:
-Get-PSFabricRecoveryPoint -WorkspaceGUID 'guid-guid-guid-guid' -DataWarehouseGUID 'guid-guid-guid-guid'
+Get-PSFabricRecoveryPoint -WorkspaceGUID 'workspace-guid-guid-guid-guid' -DataWarehouseGUID 'dwh-GUID-GUID-GUID-GUID'
 
 ## can also filter by time - I need a recovery point within the last 2 hours
 Get-PSFabricRecoveryPoint -Since (get-date).AddHours(-2)
@@ -31,7 +31,7 @@ Get-PSFabricRecoveryPoint -CreateTime '2024-07-23T09:42:36Z'
 New-PSFabricRecoveryPoint
 
 # Or if you want to pass in the parameters you can
-New-PSFabricRecoveryPoint -WorkspaceGUID 'guid-guid-guid-guid' -DataWarehouseGUID 'guid-guid-guid-guid'
+New-PSFabricRecoveryPoint -WorkspaceGUID 'workspace-guid-guid-guid-guid' -DataWarehouseGUID 'dwh-GUID-GUID-GUID-GUID'
 
 #endregion
 

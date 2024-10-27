@@ -1,4 +1,0 @@
-$sqlinstance = 'sql1'
-$null = Set-DbatoolsInsecureConnection
-
-Get-DbaDatabase -SqlInstance $sqlinstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup

@@ -8,6 +8,26 @@
 		}
 	],
 	"settings": {
-		"powershell.cwd": "PASS-BTB"
+		"powershell.cwd": "PASS-BTB",
+		"cSpell.enableFiletypes": [
+			"powershell"
+		],
+		"cSpell.words": [
+			"CHECKDB",
+			"compat",
+			"datareader",
+			"datatypes",
+			"datawriter",
+			"datetime",
+			"dbatools",
+			"Dbcc",
+			"Hmmss",
+			"refreshview",
+			"Spids",
+			"sqladmin",
+			"updatestats",
+			"UPDATEUSAGE",
+			"VARCHAR"
+		]
 	}
 }

@@ -12,11 +12,11 @@ Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 Set-PSResourceRepository -Name PSGallery -Trusted
 
 # Install the module
-$modulename = 'dbatools'
-Install-Module -Name $modulename
+$moduleName = 'dbatools'
+Install-Module -Name $moduleName
 
 # the new way
-Install-PSResource -Name $modulename
+Install-PSResource -Name $moduleName
 
 #endregion
 
@@ -24,15 +24,15 @@ Install-PSResource -Name $modulename
 # How do you find commands?
 
 # Get all commands in the module - This will work for any module
-# Get-Command -Module $modulename
+# Get-Command -Module $moduleName
 # but for dbatools, there are quite a few
-Get-Command -Module $modulename | Measure-Object
+Get-Command -Module $moduleName | Measure-Object
 
 # For any module you can use Get-Command with a filter to find commands
 # this works for the name of the command, the noun, or the verb
 
-Get-Command -Module $modulename -Name *login*
-Get-Command -Module $modulename -Name *database*
+Get-Command -Module $moduleName -Name *login*
+Get-Command -Module $moduleName -Name *database*
 
 # for dbatools, you can also use Find-DbaCommand
 # this will search the command names, descriptions, and aliases
@@ -53,7 +53,7 @@ Get-Help Get-DbaDatabase -ShowWindow
 # How do you connect to SQL Server?
 
 # You can use the -SqlInstance parameter on any dbatools command
-# This will connect to the default instance on the local machine
+# This will connect to the default instance on sql1
 Get-DbaDatabase -SqlInstance sql1
 
 # You can also use the -SqlCredential parameter interactively
@@ -76,39 +76,31 @@ Get-DbaDbBackupHistory -SqlInstance sql1
 Get-DbaDbccProcCache -SqlInstance sql1
 Get-DbaFile -SqlInstance sql1
 
-New-DbaLogin -SqlInstance sql1 -SqlCredential $cred -Login
-New-DbaServerRole -SqlInstance sql1 -Role 'MyNewRole'
-
-Add-DbaServerRoleMember
-
-Set-DbaDbOwner
-Set-DbaMaxMemory
-
 #endregion
 
-#region More things
+#region - Importing data from csv (excels, etc)
 
 # Jess and Rob - chat for a minute about the other params here
-# This will take about 30 seconds using how to find last exection time
+# This will take about 30 seconds using how to find last execution time
 # (Get-History)[-1].EndExecutionTime - (Get-History)[-1].StartExecutionTime
+
 $dbs = Get-DbaDatabase -SqlInstance sql3 -ExcludeSystem
 
-#region - Importing data from csv (excels, etc)
-$sqlInstance = "sql3"
+$SQLInstance = "sql3"
 $database = Get-Random ($dbs.Name)
 Write-Output "We shall use $database"
 $table = "authors"
 $csvPath = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors.csv"
-$delimitier = "|"
+$delimiter = "|"
 
 # Import the csv file to a table into the database
 
 $splatImportCSV = @{
-	SqlInstance = $sqlInstance
+	SqlInstance = $SQLInstance
 	Database = $database
     Table = $table
     Path = $csvPath
-    Delimiter = $delimitier
+    Delimiter = $delimiter
     AutoCreateTable = $true
 }
 Import-DbaCsv @splatImportCSV
@@ -116,7 +108,7 @@ Import-DbaCsv @splatImportCSV
 
 #Check if the data is there
 $splatInvokeQuery = @{
-	SqlInstance = $sqlInstance
+	SqlInstance = $SQLInstance
 	Database = $database
 	Query = "SELECT * FROM $table"
 }
@@ -129,11 +121,11 @@ Invoke-DbaQuery @splatInvokeQuery | Format-Table
 $csvPathBigger = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors_bigger.csv"
 
 $splatImportCSV = @{
-	SqlInstance = $sqlInstance
+	SqlInstance = $SQLInstance
 	Database = $database
     Table = "$table-2"
     Path = $csvPathBigger
-    Delimiter = $delimitier
+    Delimiter = $delimiter
     AutoCreateTable = $true
 }
 Import-DbaCsv @splatImportCSV
@@ -151,7 +143,7 @@ Import-DbaCsv @splatImportCSV
 $securePassword = (Read-Host -Prompt "Enter the new password" -AsSecureString)
 
 $loginSplat = @{
-    SqlInstance    = $sqlinstance
+    SqlInstance    = $SQLInstance
     Login          = "JessP"
     SecurePassword = $securePassword
 }
@@ -161,7 +153,7 @@ New-DbaLogin @loginSplat
 
 $database = Get-Random ($dbs.Name)
 $userSplat = @{
-    SqlInstance = $sqlinstance
+    SqlInstance = $SQLInstance
     Login       = "JessP"
     Database    = $database
 }
@@ -169,7 +161,7 @@ New-DbaDbUser @userSplat
 
 ##	Add to reader role
 $roleSplat = @{
-    SqlInstance = $sqlinstance
+    SqlInstance = $SQLInstance
     User        = "JessP"
     Database    = $database
     Role        = "db_datareader"
@@ -180,7 +172,7 @@ Add-DbaDbRoleMember @roleSplat
 ##	Change password for SQL account
 $newPassword = (Read-Host -Prompt "Enter the new password" -AsSecureString)
 $pwdSplat = @{
-    SqlInstance    = $sqlinstance
+    SqlInstance    = $SQLInstance
     Login          = "JessP"
     SecurePassword = $newPassword
 }
@@ -192,7 +184,7 @@ Set-DbaLogin @pwdSplat
 # THIS WILL TAKE A WHILE TO RUN
 
 # create the csv file
-$csv = 'C:\GitHub\PASS-BTB\Demos\01 - dbatools\genusers.csv'
+$csv = 'C:\GitHub\PASS-BTB\Demos\01 - dbatools\genUsers.csv'
 0..500 | ForEach-Object {
     [PSCustomObject]@{
         Server   = "sql3"
@@ -202,14 +194,15 @@ $csv = 'C:\GitHub\PASS-BTB\Demos\01 - dbatools\genusers.csv'
         Role     = Get-Random @("db_datareader","db_owner","db_datawriter")
     }
 } | Export-Csv -Path $csv -NoTypeInformation
+
 ## PS4+ syntax!
 Import-Csv $csv | ForEach-Object {
-    $Message = "Adding {0} on {1} and to {2} as {3})" -f $psitem.User, $psitem.Server, $psitem.Database, $psitem.Role
+    $Message = "Adding {0} on {1} and to {2} as {3})" -f $PSItem.User, $PSItem.Server, $PSItem.Database, $PSItem.Role
     Write-Output $Message
-    $server = Connect-DbaInstance -SqlInstance $psitem.Server
-    New-DbaLogin -SqlInstance $server -Login $psitem.User -Password ($psitem.Password | ConvertTo-SecureString -asPlainText -Force)
-    New-DbaDbUser -SqlInstance $server -Login $psitem.User -Database $psitem.Database
-    Add-DbaDbRoleMember -SqlInstance $server -User $psitem.User -Database $psitem.Database -Role $psitem.Role.split(',') -Confirm:$false
+    $server = Connect-DbaInstance -SqlInstance $PSItem.Server
+    New-DbaLogin -SqlInstance $server -Login $PSItem.User -Password ($PSItem.Password | ConvertTo-SecureString -asPlainText -Force)
+    New-DbaDbUser -SqlInstance $server -Login $PSItem.User -Database $PSItem.Database
+    Add-DbaDbRoleMember -SqlInstance $server -User $PSItem.User -Database $PSItem.Database -Role $PSItem.Role.split(',') -Confirm:$false
 }
 
 <#
@@ -229,26 +222,26 @@ foreach($user in $users) {
 Get-Command -Module dbatools -Verb Copy
 
 ## Get databases
-$datatbaseSplat = @{
-    SqlInstance   = $sqlinstance
+$databaseSplat = @{
+    SqlInstance   = $SQLInstance
     ExcludeSystem = $true
     OutVariable   = "just20dbs"        # OutVariable to also capture this to use later
 }
-Get-DbaDatabase @datatbaseSplat | Select-Object -First 20 |
+Get-DbaDatabase @databaseSplat | Select-Object -First 20 |
 Select-Object Name, Status, RecoveryModel, Owner, Compatibility |
 Format-Table
 
 # Get Logins
 $loginSplat = @{
-    SqlInstance = $sqlinstance
+    SqlInstance = $SQLInstance
 }
 Get-DbaLogin @loginSplat |
 Select-Object SqlInstance, Name, LoginType
 
-$sqlinstance2 = "sql2"
+$SQLInstance2 = "sql2"
 # Get Processes
 $processSplat = @{
-    SqlInstance = $sqlinstance2
+    SqlInstance = $SQLInstance2
     Database = $just20dbs.name
     ExcludeSystemSpids = $true
 }
@@ -260,11 +253,11 @@ Get-DbaProcess @processSplat | Stop-DbaProcess
 
 ## Migrate the databases
 $migrateDbSplat = @{
-    Source        = $sqlinstance
-    Destination   = $sqlinstance2
-    Database      = $just20dbs.name
+    Source        = $SQLInstance
+    Destination   = $SQLInstance2
+    Database      = $just20dbs[1..2].name
     BackupRestore = $true
-    SharedPath    = '/shared'
+    SharedPath    = '\\sql1\Backups'
     #SetSourceOffline        = $true
     Verbose       = $true
 }
@@ -272,7 +265,7 @@ Copy-DbaDatabase @migrateDbSplat
 
 ## Set source dbs offline
 $offlineSplat = @{
-    SqlInstance = $sqlinstance
+    SqlInstance = $SQLInstance
     Database    = $just20dbs.name
     Offline     = $true
     Force       = $true
@@ -281,12 +274,12 @@ Set-DbaDbState @offlineSplat
 
 ## upgrade compat level & check all is ok
 $compatSplat = @{
-    SqlInstance = $sqlinstance2
+    SqlInstance = $SQLInstance2
 }
 Get-DbaDbCompatibility @compatSplat |
 Select-Object SqlInstance, Database, Compatibility
 
-$compatSplat.Add($just20dbs.name) # need dbatools 2.0 for 160
+$compatSplat.Add('Database', $just20dbs.name) # need dbatools 2.0 for 160
 $compatSplat.Add('Compatibility', '160') # need dbatools 2.0 for 160
 
 Set-DbaDbCompatibility @compatSplat
@@ -294,24 +287,27 @@ Set-DbaDbCompatibility @compatSplat
 ## Upgrade database - https://thomaslarock.com/2014/06/upgrading-to-sql-server-2014-a-dozen-things-to-check/
 # Updates compatibility level
 # runs CHECKDB with data_purity - make sure column values are in range, e.g. datetime
-# DBCC updateusage
+# DBCC UPDATEUSAGE
 # sp_updatestats
 # sp_refreshview against all user views
 $upgradeSplat = @{
-    SqlInstance = $sqlinstance2
-    Database    = "Pubs"
+    SqlInstance = $SQLInstance2
+    Database    = $just20dbs.Name
 }
 Invoke-DbaDbUpgrade @upgradeSplat -Force
 #endregion copy/migrate
 
 #region exporting stuff to git
 
+$path = "//sql1/Backups/Export"
 
-$path = "./export/4"
+if (-not (Test-Path ($path))) {
+    New-Item -Path $path -ItemType Directory
+}
 
 # Export instance configuration
 $splatExportInstance = @{
-    SqlInstance = "dbatools1"
+    SqlInstance = 'sql1','sql2'
     Path = $path
     Exclude = @("LinkedServers", "Credentials", "CentralManagementServer", "BackupDevices", "Endpoints", "Databases", "ReplicationSettings", "PolicyManagement")
     ExcludePassword = $true
@@ -319,6 +315,7 @@ $splatExportInstance = @{
 Export-DbaInstance @splatExportInstance
 
 # Show folder output
+explorer $path
 # Show that passwords aren't scripted in plain text at logins.sql file
 
 

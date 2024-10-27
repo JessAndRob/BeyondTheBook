@@ -5,3 +5,4 @@
 - VSCode extensions
     - PowerShell
     - PowerShell Universal
+- increase jumpy power!

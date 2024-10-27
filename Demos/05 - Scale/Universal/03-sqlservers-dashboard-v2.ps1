@@ -108,22 +108,50 @@ $Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
                 {
                     $OrderDirection = 'asc'
                 }
-                if($OrderDirection -eq 'desc') {
-                    $desc = $true
-                } else {
-                    $desc = $false
-                }
-                
-                $Data = (Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body $bodyInstance -ContentType 'application/json') |
-                Sort-Object $OrderBy -Descending:$desc 
 
-                $Data | Out-UDTableData -Page $TableData.page -TotalCount $Data.Count -Properties $TableData.properties
-            } -Columns $Columns -ShowSort -ShowPagination -PageSize 10
+                $PageSize = $TableData.PageSize 
+                # Calculate the number of rows to skip
+                $Offset = $TableData.Page * $PageSize
+                
+                $query = "USE master;
+                            GO
+
+                            SELECT
+                                @@SERVERNAME as SQLInstance,
+                                d.name AS [Name],
+                                d.state_desc AS Status,
+                                d.compatibility_level AS Compatibility,
+                                CASE backups.type
+                                    WHEN 'D' THEN COALESCE(CONVERT(varchar(20), backups.last_backup, 120), 'Never') 
+                                    ELSE 'Never' 
+                                END AS LastFullBackup,
+                                CASE backups.type
+                                    WHEN 'I' THEN COALESCE(CONVERT(varchar(20), backups.last_backup, 120), 'Never')
+                                    ELSE 'Never' 
+                                END AS LastDiffBackup,
+                                CASE backups.type
+                                    WHEN 'L' THEN COALESCE(CONVERT(varchar(20), backups.last_backup, 120), 'Never') 
+                                    ELSE 'Never' 
+                                END AS LastLogBackup
+                            FROM sys.databases d
+                                LEFT JOIN (
+                                            SELECT database_name, type, MAX(backup_finish_date) AS last_backup
+                                            FROM msdb.dbo.backupset
+                                            GROUP BY database_name, type
+                                        ) backups 
+                                ON d.name = backups.database_name
+                            ORDER BY $OrderBy $OrderDirection
+                            OFFSET $Offset ROWS FETCH NEXT $PageSize ROWS ONLY;"
+
+                $count = Invoke-DbaQuery -SqlInstance $page:instance -Query 'select count(1) as Count from sys.databases'
+
+                $Data = Invoke-DbaQuery -SqlInstance $page:instance -Query $query
+
+                $Data | Out-UDTableData -Page $TableData.page -TotalCount $count.count -Properties $TableData.properties
+            } -Columns $Columns -ShowSort -ShowPagination -PageSize 5
         }
     }
 } -Icon "fas fa-database"
 
-New-UDApp -Pages $Pages -Title 'SQL Instance Dashboard'
+New-UDApp -Pages $Pages -Title 'SQL Instance Dashboard - V2'
 
-
-# https://blog.ironmansoftware.com/universal-dashboard-server-side-table/

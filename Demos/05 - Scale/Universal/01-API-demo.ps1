@@ -3,6 +3,10 @@
 Install-Module Universal
 Install-PSUServer # installs universal as a service so need to run this as admin
 
+# to upgrade
+Upate-Module Universal
+Update-PSUServer
+
 # check out the service
 Get-Service PowerShellUniversal
 
@@ -30,8 +34,7 @@ Invoke-RestMethod -Uri "http://localhost:5000/SQLInstances/GetSqlInstances" -Met
 # and lets create one to get database information
 # path: /Databases/GetDatabases
 # script:
-Get-DbaDatabase -SqlInstance sql1 | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup
-
+Get-DbaDatabase -SqlInstance sql1 | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose 
 # lets call it from here
 Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get
 
@@ -39,7 +42,7 @@ Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Ge
 # path: /Databases/GetDatabases/:sqlinstance
     # the :sqlinstance becomes $sqlinstance
 # script:
-Get-DbaDatabase -SqlInstance $sqlinstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup
+Get-DbaDatabase -SqlInstance $sqlinstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose 
 
 # we can test that with this call
 Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases/sql1" -Method Get
@@ -50,7 +53,7 @@ Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases/sql2" -Meth
 # path: /Databases/GetDatabases
 # script:
 $inputData = $body | ConvertFrom-Json -Depth 10
-Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup
+Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose
 
 # and call that with the body parameter
 Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Get -Body '{"sqlinstance":"sql1"}' -ContentType 'application/json'
@@ -64,7 +67,7 @@ Invoke-RestMethod -Uri "http://localhost:5000/Databases/GetDatabases" -Method Ge
 # script:
 try {
     $inputData = $body | ConvertFrom-Json -Depth 10
-    Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup
+    Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose
 } catch {
     return $_.Exception.Message
 }
@@ -76,7 +79,7 @@ try {
     if($inputData -notcontains "SqlInstance") {
         return "Please provide a SqlInstance in the body of the request"
     }
-    Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup
+    Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose
 } catch {
     return $_.Exception.Message
 }

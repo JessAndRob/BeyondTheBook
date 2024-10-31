@@ -1,0 +1,17 @@
+name: Doing a test
+description: Doing a test
+title: "[test]: "
+labels: "test"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Let's add an article to replication on sql1.
+  - type: input
+    id: database
+    attributes:
+      label: Database
+      description: Publisher database that contains the article.
+    validations:
+      required: true
+ 

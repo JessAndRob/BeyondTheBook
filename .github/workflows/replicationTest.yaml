@@ -15,7 +15,7 @@ jobs:
         ls
     - name: Close Issue
       run: |
-        gh repo set-default JessAndRob/PASS-BTB
+        Set-Location C:\GitHub\PASS-BTB
         gh issue close ${{ github.event.issue.number }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

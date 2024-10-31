@@ -14,7 +14,9 @@ jobs:
         pwd
         ls
     - name: Close Issue
-      run: gh issue close ${{ github.event.issue.number }} -R JessAndRob/PASS-BTB
+      run: |
+        gh repo set-default JessAndRob/PASS-BTB
+        gh issue close ${{ github.event.issue.number }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         

@@ -7,12 +7,11 @@ jobs:
   add_article:
     runs-on: self-hosted
     if: contains(github.event.issue.labels.*.name, 'replication')
+    permissions:
+      issues: write      # Add this to ensure proper permissions
+      contents: read     # Add this if you need repo access
+
     steps:
-    - name: Where am i
-      shell: pwsh
-      run: |
-        pwd
-        ls
     - name: Issue Forms Body Parser
       id: parse
       uses: zentered/issue-forms-body-parser@v2.0.0
@@ -62,9 +61,10 @@ jobs:
         }
             
     - name: Close Issue
-      run: gh issue close ${{ github.event.issue.number }} -R JessAndRob/PASS-BTB
+      shell: pwsh
+      run: |
+        gh auth login --with-token $env:GITHUB_TOKEN
+        gh issue close ${{ github.event.issue.number }} -R JessAndRob/PASS-BTB
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
 
-# TODO: closing the issue doesn't work?!?

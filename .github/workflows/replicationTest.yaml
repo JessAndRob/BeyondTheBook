@@ -8,6 +8,10 @@ jobs:
     runs-on: self-hosted
     if: contains(github.event.issue.labels.*.name, 'test')
     steps:
+
+    # Checkout code
+    - uses: actions/checkout@main
+
     - name: Where am i
       shell: pwsh
       run: |
@@ -15,8 +19,6 @@ jobs:
         ls
     - name: Close Issue
       run: |
-        cd C:\GitHub\PASS-BTB
-        pwd
         gh issue close ${{ github.event.issue.number }} -R JessAndRob/PASS-BTB
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

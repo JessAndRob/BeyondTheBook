@@ -15,7 +15,8 @@ jobs:
         ls
     - name: Close Issue
       run: |
-        Set-Location C:\GitHub\PASS-BTB
+        cd C:\GitHub\PASS-BTB
+        pwd
         gh issue close ${{ github.event.issue.number }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

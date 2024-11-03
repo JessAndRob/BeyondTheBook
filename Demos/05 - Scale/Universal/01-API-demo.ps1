@@ -4,7 +4,7 @@ Install-Module Universal
 Install-PSUServer # installs universal as a service so need to run this as admin
 
 # to upgrade
-Upate-Module Universal
+Update-Module Universal
 Update-PSUServer
 
 # check out the service

@@ -25,10 +25,10 @@ if (-not (Test-Path -Path "C:\Temp\test.txt")) {
 ## Let's talk about flow control
 
 # If this is a script we want to control what happens when we enc
-code '.\Demos\02 - Upskill\ErrorHandling\script.ps1'
+code '.\Demos\03 - Upskill\ErrorHandling\script.ps1'
 
 # lets run it as it is so far
-& '.\Demos\02 - Upskill\ErrorHandling\script.ps1'
+& '.\Demos\03 - Upskill\ErrorHandling\script.ps1'
 
 # if it errors it still carries on and does the rest of what is in the script - probably not ideal
 
@@ -66,10 +66,10 @@ finally {
 }
 
 # lets improve our script some 
-code '.\Demos\02 - Upskill\ErrorHandling\script_v2.ps1'
+code '.\Demos\03 - Upskill\ErrorHandling\script_v2.ps1'
 
 # and run it
-& '.\Demos\02 - Upskill\ErrorHandling\script_v2.ps1'
+& '.\Demos\03 - Upskill\ErrorHandling\script_v2.ps1'
 
 ## umm??
 ## Q: What happened? Why did it run the rest of the script still?
@@ -92,10 +92,10 @@ code '.\Demos\02 - Upskill\ErrorHandling\script_v2.ps1'
 
 # We can change this behaviour by setting the ErrorAction parameter to Stop
 
-code '.\Demos\02 - Upskill\ErrorHandling\script_v3.ps1'
+code '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
 
 # and run it
-& '.\Demos\02 - Upskill\ErrorHandling\script_v3.ps1'
+& '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
 
 
 #################
@@ -120,21 +120,28 @@ Write-PSFMessage -Level Verbose -Message "This is a verbose message"
 $VerbosePreference = 'SilentlyContinue'
 Write-PSFMessage -Level Verbose -Message "This is a verbose message"
 
+## we can also view them with Get-PSFMessage
+Get-PSFMessage
+
 # We also have Stop-PSFFunction which will stop the script and provide a message
 Stop-PSFFunction -Message 'We have an error'
 
 # so lets change our script to use PSFramework
-code '.\Demos\02 - Upskill\ErrorHandling\script_v4.ps1'
+code '.\Demos\03 - Upskill\ErrorHandling\script_v4.ps1'
 
 # and run it
-& '.\Demos\02 - Upskill\ErrorHandling\script_v4.ps1'
+& '.\Demos\03 - Upskill\ErrorHandling\script_v4.ps1'
 
 ####################
 ## Bonus: Logging ##
 ####################
 
 # PSFramework also has a logging module that can log messages to a file
-Set-PSFLoggingProvider -Name logfile -Enabled $true -FilePath 'C:\github\PASS-BTB\Demos\02 - Upskill\ErrorHandling\log.csv'
+# or Azure Log Analytics, Graylog, Splunk, SQL
+Set-PSFLoggingProvider -Name logfile -Enabled $true -FilePath 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
+
+
+
 
 # Now all messages in this session go to the file
 Write-PSFMessage -Level Critical -Message "This is an error message"
@@ -143,16 +150,16 @@ Write-PSFMessage -Level Verbose -Message "This is a verbose message"
 Write-PSFMessage -Level Host -Message "This is an output message"
 
 # now we can see the log file
-code 'C:\github\PASS-BTB\Demos\02 - Upskill\ErrorHandling\log.csv'
+code 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 # but we can also read it in as it's a csv
-Import-CSV 'C:\github\PASS-BTB\Demos\02 - Upskill\ErrorHandling\log.csv'
+Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 # which means we can also filter it
-Import-CSV 'C:\github\PASS-BTB\Demos\02 - Upskill\ErrorHandling\log.csv' | Where-Object Level -eq 'Critical'
+Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv' | Where-Object Level -eq 'Critical'
 
 # or group it 
-Import-CSV 'C:\github\PASS-BTB\Demos\02 - Upskill\ErrorHandling\log.csv' | Group-Object Level
+Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv' | Group-Object Level
 
 # lets turn off the logging provider so we don't log the rest of the precon
 Set-PSFLoggingProvider -Name logfile -Enabled $false

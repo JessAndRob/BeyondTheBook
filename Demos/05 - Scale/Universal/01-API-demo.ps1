@@ -76,7 +76,7 @@ try {
 try {
     $inputData = $body | ConvertFrom-Json -Depth 10
     
-    if($inputData -notcontains "SqlInstance") {
+    if($inputData.PSObject.Properties.Name -notcontains "SqlInstance") {
         return "Please provide a SqlInstance in the body of the request"
     }
     Get-DbaDatabase -SqlInstance $inputData.SqlInstance | Select-Object SqlInstance,Name,Status,Compatibility,LastFullBackup,LastDiffBackup,LastLogBackup,Trustworthy,PageVerify,AutoShrink,AutoClose

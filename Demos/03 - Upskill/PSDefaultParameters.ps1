@@ -5,7 +5,7 @@ get-help about_Parameters_DefaultValues
 
 # we can get a list of databases from a sql server like this with a sql credential #TODO: do we have one to use?
 $cred = Get-Credential sqladmin
-Get-DbaDatabase -SqlInstance mssql1 -SqlCredential $cred
+Get-DbaDatabase -SqlInstance sql1 -SqlCredential $cred
 
 # but we either need to save the connection to a variable, or pass in the credential each time
 # instead we can set the default value for the SqlCredential parameter
@@ -19,7 +19,7 @@ $PSDefaultParameterValues = @{
 $PSDefaultParameterValues
 
 # now we can just call the cmdlet without the SqlCredential parameter
-Get-DbaDatabase -SqlInstance mssql1
+Get-DbaDatabase -SqlInstance sql1
 
 # we can also set the default value for all cmdlets that have a SqlCredential parameter
 $PSDefaultParameterValues = @{
@@ -30,11 +30,11 @@ $PSDefaultParameterValues = @{
 $PSDefaultParameterValues
 
 # now we can call any cmdlet that has a SqlCredential parameter without passing it in
-Invoke-DbaQuery -SqlInstance mssql1 -Query 'SELECT SUSER_NAME() as WhoAmI'
+Invoke-DbaQuery -SqlInstance sql1 -Query 'SELECT SUSER_NAME() as WhoAmI'
 
 # we can also add to the default values instead of replacing them
 $PSDefaultParameterValues += @{
-    '*-Dba*:SqlInstance' = 'mssql1'
+    '*-Dba*:SqlInstance' = 'sql1'
 }
 
 # view the default parameter values

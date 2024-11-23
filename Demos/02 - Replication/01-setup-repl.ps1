@@ -111,7 +111,7 @@ Select-Object SqlInstance, DatabaseName, PublicationName, Name, SourceObjectOwne
 Get-DbaReplPublication -SqlInstance sql1
 
 # and view articles from publications - magic of objects
-(Get-DbaReplPublication -SqlInstance sql1 -Name snappy).Articles
+(Get-DbaReplPublication -SqlInstance sql1 -Name testpub).Articles
 
 # add subscriptions
 $sub = @{

@@ -6,7 +6,9 @@
 
 # This is useful when you have a lot of parameters to pass in, or you want to pass in a collection of parameters that you've already defined.
 
-## I asked a couple of AI tools to find me the dbatools command with the most parameters - we got there in the end!
+## I asked a couple of AI tools to find me the dbatools command with the 
+# most parameters - we got there in the end!
+
 #region get command with most parameters
     # Import the dbatools module if it's not already loaded
     Import-Module dbatools
@@ -66,16 +68,16 @@ Backup-DbaDatabase -SqlInstance mssql1 -SqlCredential $cred -Database pubs -Bloc
 
 ## We can use splatting to make this easier to read
 $backupParams = @{
-    SqlInstance = 'mssql1'
+    SqlInstance = 'sql1'
     SqlCredential = $cred
-    Database = 'pubs'
+    Database = 'msdb'
     BlockSize = '16KB'
     BufferCount = 7
     MaxTransferSize = '1MB'
     CheckSum = $true
     CopyOnly = $true
     CompressBackup = $true
-    Path = '/shared'
+    Path = 'C:\temp'
     Type = 'Full'
     FileCount = 7
     Verify = $true

@@ -92,7 +92,7 @@ Get-DbaReplArticle -SqlInstance sql1 | Remove-DbaReplArticle
     Remove-DbaReplPublication @pub
 
 # remove all the publications with piping
-Get-DbaReplPublication -SqlInstance sql1 | Remove-DbaReplPublication
+Get-DbaReplPublication -SqlInstance sql1 | Remove-DbaReplPublication -Confirm:$false
 
 # disable publishing
 Disable-DbaReplPublishing -SqlInstance sql1 -force

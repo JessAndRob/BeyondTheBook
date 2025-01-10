@@ -138,7 +138,7 @@ code '.\Demos\03 - Upskill\ErrorHandling\script_v4.ps1'
 
 # PSFramework also has a logging module that can log messages to a file
 # or Azure Log Analytics, Graylog, Splunk, SQL
-Set-PSFLoggingProvider -Name logfile -Enabled $true -FilePath 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
+Set-PSFLoggingProvider -Name logfile -Enabled $true -FilePath 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 
 
@@ -150,16 +150,16 @@ Write-PSFMessage -Level Verbose -Message "This is a verbose message"
 Write-PSFMessage -Level Host -Message "This is an output message"
 
 # now we can see the log file
-code 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
+code 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 # but we can also read it in as it's a csv
-Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv'
+Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 # which means we can also filter it
-Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv' | Where-Object Level -eq 'Critical'
+Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' | Where-Object Level -eq 'Critical'
 
 # or group it 
-Import-CSV 'C:\github\PASS-BTB\Demos\03 - Upskill\ErrorHandling\log.csv' | Group-Object Level
+Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' | Group-Object Level
 
 # lets turn off the logging provider so we don't log the rest of the precon
 Set-PSFLoggingProvider -Name logfile -Enabled $false

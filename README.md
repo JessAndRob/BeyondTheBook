@@ -1,6 +1,6 @@
-# PASS-BTB
+# Beyond The Book
 
-PASS 2024 Precon - dbatools: Beyond the book
+dbatools: Beyond the book
 
 ## Agenda
 

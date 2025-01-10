@@ -8,7 +8,7 @@
 		}
 	],
 	"settings": {
-		"powershell.cwd": "PASS-BTB",
+		"powershell.cwd": "BeyondTheBook",
 		"cSpell.enableFiletypes": [
 			"powershell"
 		],

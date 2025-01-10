@@ -90,7 +90,7 @@ $SQLInstance = "sql3"
 $database = Get-Random ($dbs.Name)
 Write-Output "We shall use $database"
 $table = "authors"
-$csvPath = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors.csv"
+$csvPath = "C:\GitHub\BeyondTheBook\Demos\01 - dbatools\authors.csv"
 $delimiter = "|"
 
 # Import the csv file to a table into the database
@@ -118,7 +118,7 @@ Invoke-DbaQuery @splatInvokeQuery | Format-Table
 # Not impressed?
 # Let's check with a file that contains 200K rows
 
-$csvPathBigger = "C:\GitHub\PASS-BTB\Demos\01 - dbatools\authors_bigger.csv"
+$csvPathBigger = "C:\GitHub\BeyondTheBook\Demos\01 - dbatools\authors_bigger.csv"
 
 $splatImportCSV = @{
 	SqlInstance = $SQLInstance
@@ -184,7 +184,7 @@ Set-DbaLogin @pwdSplat
 # THIS WILL TAKE A WHILE TO RUN
 
 # create the csv file
-$csv = 'C:\GitHub\PASS-BTB\Demos\01 - dbatools\genUsers.csv'
+$csv = 'C:\GitHub\BeyondTheBook\Demos\01 - dbatools\genUsers.csv'
 0..500 | ForEach-Object {
     [PSCustomObject]@{
         Server   = "sql3"

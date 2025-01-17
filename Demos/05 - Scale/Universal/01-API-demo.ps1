@@ -18,7 +18,9 @@ Start-Process "http://localhost:5000"
 ##########
 
 # create a new api in the web portal
-# name: 
+# path: /hello-world
+# script:
+Write-Output 'Hello World'
 
 # call the api endpoint
 Invoke-RestMethod -Uri "http://localhost:5000/hello-world" -Method Get

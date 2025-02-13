@@ -64,7 +64,7 @@
 ##TODO: look at log shipping on sql1\sql2
 
 ## Lets take a full backup of the pubs database using the Backup-DbaDatabase command
-Backup-DbaDatabase -SqlInstance mssql1 -SqlCredential $cred -Database pubs -BlockSize 16KB -BufferCount 7 -MaxTransferSize 1MB -CheckSum -CopyOnly -CompressBackup -Path '/shared' -Type Full -FileCount 7 -Verify -Description 'A full backup taken of the pubs database by Jess and Rob on stage in Seattle.'
+Backup-DbaDatabase -SqlInstance mssql1 -SqlCredential $cred -Database pubs -BlockSize 16KB -BufferCount 7 -MaxTransferSize 1MB -CheckSum -CopyOnly -CompressBackup -Path '/shared' -Type Full -FileCount 7 -Verify -Description 'A full backup taken of the pubs database by Jess and Rob at SQL Konf.'
 
 ## We can use splatting to make this easier to read
 $backupParams = @{
@@ -81,6 +81,6 @@ $backupParams = @{
     Type = 'Full'
     FileCount = 7
     Verify = $true
-    Description = 'A full backup taken of the pubs database by Jess and Rob on stage in Seattle.'
+    Description = 'A full backup taken of the pubs database by Jess and Rob at SQL Konf.'
 }
 Backup-DbaDatabase @backupParams

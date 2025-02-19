@@ -21,8 +21,8 @@
 
 - 1000-1230 - intro, dbatools, replication, upgrade & performant
 - 1230-1330 - lunch
-- 1330-1500 - performant, scale
+- 1330-1500 - performant, scale, dbachecks
 - 1500-1530 - coffee
-- 1530-1700 - dbachecks, dbatools.ai
+- 1530-1700 - dbatools.ai
 
   

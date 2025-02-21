@@ -2,14 +2,19 @@
 
 # get a database
 
-Invoke-WebRequest -Uri https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorks2017.bak -OutFile \\$source\c$\temp\AdventureWorks2017.bak
-Restore-DbaDatabase -SqlInstance $source -Path C:\temp\AdventureWorks2017.bak -UseDestinationDefaultDirectories
 
 $source = 'sql3'
 $databaseName = 'AdventureWorks2017'
 $secondNode = 'sql1'
 $thirdNode = 'sql2'
 $sharedPath = '\\sql1\Backups\'
+$agName - 'Ag1'
+
+Mkdir \\$source\c$\temp\
+
+Invoke-WebRequest -Uri https://github.com/Microsoft/sql-server-samples/releases/download/adventureworks/AdventureWorks2017.bak -OutFile \\$source\c$\temp\AdventureWorks2017.bak
+Restore-DbaDatabase -SqlInstance $source -Path C:\temp\AdventureWorks2017.bak -UseDestinationDefaultDirectories
+Set-DbaDbRecoveryModel -SqlInstance $source -Database $databaseName -RecoveryModel Full
 
 # Full backup
 $backupParams = @{
@@ -34,9 +39,10 @@ $secondNode, $thirdNode | ForEach-Object {
 } 
 
 # setup
+# make sure file paths exist
 $params = @{
-    SourceSqlInstance = '$source'
-    DestinationSqlInstance = '$secondNode', '$thirdNode'
+    SourceSqlInstance = $source
+    DestinationSqlInstance = $secondNode, $thirdNode
     Database = 'AdventureWorks2017'
     SharedPath = '\\sql1\Backups\sql3'
     CopyDestinationFolder = '\\sql1\Backups\sql2'
@@ -89,9 +95,12 @@ $backupParams = @{
 }
 Backup-DbaDatabase @backupParams
 
+# take source database offline
+Set-DbaDbState -SqlInstance $source -Database $databaseName -Offline -Force
+
 # restore that log file with continue (can nodes get here? otherwise we need to move it to their folder)
 $restoreParams = @{
-    SqlInstance = $thirdNode
+    SqlInstance = $secondNode
     DatabaseName = $databaseName
     Path = $trnBackup.Path
     Continue = $true
@@ -100,7 +109,7 @@ $restoreParams = @{
 Restore-DbaDatabase @restoreParams
 
 $restoreParams = @{
-    SqlInstance = $secondNode
+    SqlInstance = $thirdNode
     DatabaseName = $databaseName
     Path = $trnBackup.Path
     Continue = $true
@@ -109,3 +118,4 @@ $restoreParams = @{
 Restore-DbaDatabase @restoreParams
 
 # go add to AG in GUI
+Add-DbaAgDatabase -SqlInstance $secondNode -Database $databaseName -AvailabilityGroup $agName -SeedingMode Manual

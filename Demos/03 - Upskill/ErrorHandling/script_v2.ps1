@@ -2,7 +2,7 @@ Write-Output "Starting script"
 
 Write-Output "Create a file"
 try {
-    New-Item -Path "C:\Temp\test.txt" -ItemType File
+    New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
     Write-Output "Do something with the file"
 }
 catch {

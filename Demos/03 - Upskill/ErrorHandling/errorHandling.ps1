@@ -24,7 +24,7 @@ if (-not (Test-Path -Path "C:\Temp\test.txt")) {
 
 ## Let's talk about flow control
 
-# If this is a script we want to control what happens when we enc
+# If this is a script we want to control what happens when we encounter an error
 code '.\Demos\03 - Upskill\ErrorHandling\script.ps1'
 
 # lets run it as it is so far
@@ -40,9 +40,17 @@ catch {
     Write-Error "Failed to create file: $_"
 }
 
+# why didn't it get to the catch? It's not a terminating error - Try/Catch only works with terminating errors
+try {
+    New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
+}
+catch {
+    Write-Error "Failed to create file: $_"
+}
+
 # and we can handle specific errors
 try {
-    New-Item -Path "C:\Temp\test.txt" -ItemType File
+    New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
 }
 catch [System.UnauthorizedAccessException] {
     Write-Error "You do not have permission to create the file"
@@ -56,7 +64,7 @@ catch {
 
 # we can also have a finally block that will always run
 try {
-    New-Item -Path "C:\Temp\test.txt" -ItemType File
+    New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
 }
 catch {
     Write-Error "An error occurred: $_"
@@ -70,33 +78,6 @@ code '.\Demos\03 - Upskill\ErrorHandling\script_v2.ps1'
 
 # and run it
 & '.\Demos\03 - Upskill\ErrorHandling\script_v2.ps1'
-
-## umm??
-## Q: What happened? Why did it run the rest of the script still?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## A: PowerShell will only catch terminating errors by default.
-## and New-Item does not throw a terminating error when the file already exists.
-
-# We can change this behaviour by setting the ErrorAction parameter to Stop
-
-code '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
-
-# and run it
-& '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
-
 
 #################
 ## PSFramework ##
@@ -127,16 +108,16 @@ Get-PSFMessage
 Stop-PSFFunction -Message 'We have an error'
 
 # so lets change our script to use PSFramework
-code '.\Demos\03 - Upskill\ErrorHandling\script_v4.ps1'
+code '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
 
 # and run it
-& '.\Demos\03 - Upskill\ErrorHandling\script_v4.ps1'
+& '.\Demos\03 - Upskill\ErrorHandling\script_v3.ps1'
 
 ####################
 ## Bonus: Logging ##
 ####################
 
-# PSFramework also has a logging module that can log messages to a file
+# PSFramework also has logging commands that can log messages to a file
 # or Azure Log Analytics, Graylog, Splunk, SQL
 Set-PSFLoggingProvider -Name logfile -Enabled $true -FilePath 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 

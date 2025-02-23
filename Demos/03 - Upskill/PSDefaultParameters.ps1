@@ -3,6 +3,9 @@
 
 get-help about_Parameters_DefaultValues
 
+# this doesn't always work well these days so go to online version
+Start-Process https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters_default_values?view=powershell-7.5
+
 # we can get a list of databases from a sql server like this with a sql credential #TODO: do we have one to use?
 $cred = Get-Credential sqladmin
 Get-DbaDatabase -SqlInstance sql1 -SqlCredential $cred

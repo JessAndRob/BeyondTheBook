@@ -18,10 +18,14 @@ dbatools: Beyond the book
         - Using Measure-Command
     - Problem solving
         - catching errors/exceptions
-
+- dbachecks
+    - What is dbachecks?
+    - New Version
+    - Dashboards
 - Replication
     - Replication Overview
     - Replication with dbatools
+    - Replication & GitHub Actions
 - Recipes ???
     - Backup and Restore across subscriptions with storage accounts and TDE or certificates for encryption :-)
     - PSHTML or PowerShell Universal Dashboard for instance info
@@ -41,23 +45,14 @@ Join Jess Pomfret and Rob Sewell, two of the ‘dbatools in a Month of Lunches�
 There will be many practical examples of how dbatools and dbachecks can help to save time in DBA administration duties such as:
 
 •	Finding SQL Instances on your estate
-
 •	High Availability and Disaster Recovery scenarios
-
 •	Working with Replication
-
 •	Backup Testing
-
 •	Instance migrations
-
 •	Validating your estate with dbachecks
-
 •	dbatools and dbachecks in DevOps processes
-
 •	Using PowerShell in the cloud (i.e. working with Azure SQL Database, Azure SQL Managed Instance)
-
 •	PowerShell coding for performance
-
 •	Using dbatools and dbachecks in Azure Functions and Azure Runbooks
 
 Take your dbatools and dbachecks skills to the next level and become more effective in your role. Register now to reserve your spot!

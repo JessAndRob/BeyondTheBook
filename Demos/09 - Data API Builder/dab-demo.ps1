@@ -1,6 +1,6 @@
 # Data API Builder
 
-Set-Location '.\Demos\09 - Data API Builder'
+Set-Location '.\Demos\08 - Data API Builder'
 
 # Install the tool
 dotnet tool install --global Microsoft.DataApiBuilder

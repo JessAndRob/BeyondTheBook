@@ -2,7 +2,7 @@ on:
   issues:
     types: [opened,reopened]
 
-name: Run Command
+name: Add Article to Replication
 jobs:
   add_article:
     runs-on: self-hosted
@@ -55,7 +55,16 @@ jobs:
               Name            = $finalRes.'article'.text
               EnableException = $true
             }
-            Add-DbaReplArticle @article
+          Add-DbaReplArticle @article
+
+          $job = @{
+            SqlInstance = 'sql1'
+            Category    = 'repl-snapshot'
+          }
+          Get-DbaAgentJob @job | 
+          Where-Object name -like  ('{0}-{1}-{2}*' -f 'sql1', $finalRes.'database'.text, $finalRes.'publication'.text) | 
+          Start-DbaAgentJob -EnableException
+
         } catch {
           Throw $_
         }
@@ -64,7 +73,7 @@ jobs:
       shell: pwsh
       run: |
         gh auth login --with-token $env:GITHUB_TOKEN
-        gh issue close ${{ github.event.issue.number }} -R JessAndRob/BeyondTheBook
+        gh issue close ${{ github.event.issue.number }} -R jpomfret/dbatools-githubactions
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}        
 

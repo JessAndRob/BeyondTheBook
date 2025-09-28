@@ -12,10 +12,12 @@ $Pages += New-UDPage -Name 'SQLInstances' -Content {
             $instances = Invoke-RestMethod -Uri http://localhost:5000/SqlInstances/GetSqlInstances
 
             $Columns = @(
-                New-UDTableColumn -Property SqlInstance -Title "SQL Instance" -render {New-UDLink -Text $EventData.SqlInstance -OnClick {
-                    $page:instance = $EventData.SqlInstance
-                    Invoke-UDRedirect -Url '/databases'
-                } }
+                New-UDTableColumn -Property SqlInstance -Title "SQL Instance" -Render {
+                    $sqlInstance = $EventData.SqlInstance
+                    New-UDLink -Text $sqlInstance -OnClick {
+                        Invoke-UDRedirect -Url "/databases?instance=$sqlInstance"
+                    }
+                }
                 New-UDTableColumn -Property VersionString -Title "Version"
                 New-UDTableColumn -Property EngineEdition -Title "Engine Edition"
                 New-UDTableColumn -Property Edition -Title "Edition"
@@ -26,7 +28,7 @@ $Pages += New-UDPage -Name 'SQLInstances' -Content {
     }
 } -Icon "fas fa-server"
 $Pages += New-UDPage -Name 'Databases' -url '/databases' -Content {
-
+    $page:instance = $query.instance
     $instances = Invoke-RestMethod -Uri http://localhost:5000/SqlInstances/GetSqlInstances
 
     New-UDDynamic -Id 'databasesTitle' -Content {

@@ -77,7 +77,7 @@ try {
 # we could also validate the input
 try {
     $inputData = $body | ConvertFrom-Json -Depth 10
-    
+
     if($inputData.PSObject.Properties.Name -notcontains "SqlInstance") {
         return "Please provide a SqlInstance in the body of the request"
     }
@@ -106,8 +106,8 @@ try {
         $backupType = "Full"
     }
 
-    Backup-DbaDatabase -SqlInstance $inputData.SqlInstance -Database $inputData.Database -Type $backupType | Select-Object SqlInstance, Database, Start, End, Type, BackupComplete, BackupFile
-    
+    Backup-DbaDatabase -SqlInstance $inputData.SqlInstance -Database $inputData.Database -Type $backupType -EnableException | Select-Object SqlInstance, Database, Start, End, Type, BackupComplete, BackupFile
+
 } catch {
     return $_.Exception.Message
 }

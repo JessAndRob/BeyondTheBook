@@ -204,9 +204,14 @@ $whatamI.Column1 -eq [System.DBNull]::Value
 
 ## Lets create some files
 
-$filecontent = 0..100 | ForEach-Object { Invoke-RestMethod -Uri https://loripsum.net/api/10/short/headers }
+$filecontent = 0..100 | ForEach-Object { Invoke-RestMethod -Uri https://baconipsum.com/api/?type=meat-and-filler }
 
+if ($IsWindows){
 $directory = "C:\temp\perf"
+}elseif ($IsLinux){
+$directory = "/tmp/perf"
+}
+
 if (-not (Test-Path $directory)) {
     New-Item -Path $directory -ItemType Directory
 } else {
@@ -215,7 +220,7 @@ if (-not (Test-Path $directory)) {
 0..10 | ForEach-Object {
     $loop = $_
     0..100 | ForEach-Object {
-        $filename = "{0}\file{1}{2}.txt" -f $directory, $loop, $_
+        $filename = "{0}{3}file{1}{2}.txt" -f $directory, $loop, $_,[IO.Path]::DirectorySeparatorChar
         $filecontent[$_] | Set-Content -Path $filename
     }
 }
@@ -226,15 +231,15 @@ Get-ChildItem -Path $directory
 
 # Get-Content can read a file contents into memory,
 
-Get-Content -Path "$($directory)\file0.txt" | Select-String "quidem"
+Get-Content -Path "$($directory)$([IO.Path]::DirectorySeparatorChar)file00.txt" | Select-String "bacon"
 
 # but it is not the best way to search for a string in a bunch of files.
 
 $GetContent = Trace-Script -ScriptBlock { Get-ChildItem $directory |
     Get-Content |
-    Select-String "quidem"
+    Select-String "bacon"
 }
-$SelectString = Trace-Script -ScriptBlock { Get-ChildItem $directory | Select-String "quidem" }
+$SelectString = Trace-Script -ScriptBlock { Get-ChildItem $directory | Select-String "bacon" }
 
 $GetContent.TotalDuration.Milliseconds
 

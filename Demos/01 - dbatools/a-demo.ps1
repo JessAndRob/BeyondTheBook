@@ -299,7 +299,7 @@ Invoke-DbaDbUpgrade @upgradeSplat -Force
 
 #region exporting stuff to git
 
-$path = "//sql1/Backups/Export"
+$path = "\\sql1\Backups\Export"
 
 if (-not (Test-Path ($path))) {
     New-Item -Path $path -ItemType Directory

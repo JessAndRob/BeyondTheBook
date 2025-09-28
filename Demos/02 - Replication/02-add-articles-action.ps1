@@ -5,8 +5,8 @@ https://github.com/organizations/JessAndRob/settings/actions/runners/new?arch=x6
 
 # Create a folder under the drive root
 Set-Location C:\
-New-Item -Path actions-runner -ItemType Directory
-Set-Location actions-runner
+New-Item -Path actions-runner-btb -ItemType Directory
+Set-Location actions-runner-btb
 
 # Download the latest runner package
 Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-win-x64-2.322.0.zip -OutFile actions-runner-win-x64-2.322.0.zip

@@ -34,6 +34,7 @@
     $maxParams
 
     #region get command with most parameters - Jess code
+        Remove-Variable paramCount
         # Import the dbatools module if it's not already loaded
         Import-Module dbatools
     
@@ -47,16 +48,13 @@
         $paramcount = @()
         # Iterate over each command to count the parameters
         foreach ($command in $commands) {
+            # Test-DbaNetworkLatency breaks the count... ignore that red...
             $paramCount += [PSCustomObject]@{
                 CommandName = $command.Name
                 ParameterCount = [int]((Get-Command $command.Name).Parameters.Count)
             }
         }
         $paramcount | Sort-Object -Property ParameterCount -Descending | Select-Object -First 10
-    
-        # Output the command with the most parameters and the count
-        $commandWithMostParams.Name
-        $maxParams
     #endregion
 #endregion
 
@@ -64,7 +62,7 @@
 ##TODO: look at log shipping on sql1\sql2
 
 ## Lets take a full backup of the pubs database using the Backup-DbaDatabase command
-Backup-DbaDatabase -SqlInstance mssql1 -SqlCredential $cred -Database pubs -BlockSize 16KB -BufferCount 7 -MaxTransferSize 1MB -CheckSum -CopyOnly -CompressBackup -Path '/shared' -Type Full -FileCount 7 -Verify -Description 'A full backup taken of the pubs database by Jess and Rob at SQL Konf.'
+Backup-DbaDatabase -SqlInstance sql1 -SqlCredential $cred -Database AdventureWorks2022 -BlockSize 16KB -BufferCount 7 -MaxTransferSize 1MB -CheckSum -CopyOnly -CompressBackup -Path '\\sql1\Backups\sql1\' -Type Full -FileCount 7 -Verify -Description 'A full backup taken of the AdventureWorks database by Jess and Rob at dataminds.'
 
 ## We can use splatting to make this easier to read
 $backupParams = @{
@@ -77,10 +75,10 @@ $backupParams = @{
     CheckSum = $true
     CopyOnly = $true
     CompressBackup = $true
-    Path = 'C:\temp'
+    Path = '\\sql1\Backups\sql1\'
     Type = 'Full'
     FileCount = 7
     Verify = $true
-    Description = 'A full backup taken of the pubs database by Jess and Rob at SQL Konf.'
+    Description = 'A full backup taken of the AdventureWorks database by Jess and Rob at dataminds.'
 }
 Backup-DbaDatabase @backupParams

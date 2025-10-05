@@ -8,7 +8,7 @@ $databaseName = 'AdventureWorks2017'
 $secondNode = 'sql1'
 $thirdNode = 'sql2'
 $sharedPath = '\\sql1\Backups\'
-$agName - 'Ag1'
+$agName = 'Ag1'
 
 Mkdir \\$source\c$\temp\
 

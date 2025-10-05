@@ -105,7 +105,9 @@ $trace.Events | Format-Table -AutoSize
 
 # maybe read in the file list from the backup demo from the 01 session?
 
+# USE WINDOWS POWERSHELL
 
+powershell.exe
 
 # Always use $null -eq never use -eq $null
 
@@ -137,6 +139,7 @@ foreach ($thing in $thingIamsearchthrough) {
     }
 }
 
+# so whats the problem?
 $value = $null
 
 if ( $value -eq $null )
@@ -148,6 +151,7 @@ if ( $value -ne $null )
     'The array is not $null'
 }
 
+# so that was ok what about this?
 $value = @( $null )
 if ( $value -eq $null )
 {
@@ -158,6 +162,7 @@ if ( $value -ne $null )
     'The array is not $null'
 }
 
+# here is a bit of fun from Mathais Jessen
 function Get-True  {
     [CmdletBinding()]
     param (
@@ -169,11 +174,14 @@ function Get-True  {
 
   Describe 'Get-True' {
     It 'Returns $true' {
-      $MagicSauce = $( <# what needs to go here...? #> )
+      $MagicSauce = $( <# what needs to go here...? #> ) ##########################################################################################################################################################################################################################################  $SecretMagicSauce = &{,$null*2 + 1}
       Get-True -Magic $MagicSauce | Should BeExactly $true
     }
   }
 
+  exit # go back to pwsh
+
+  # what is null and what is dbnull
 
 $whatamI = Invoke-DbaQuery -SqlInstance sql1 -Database master -Query "SELECT NULL"
 
@@ -204,7 +212,7 @@ $whatamI.Column1 -eq [System.DBNull]::Value
 
 ## Lets create some files
 
-$filecontent = 0..100 | ForEach-Object { Invoke-RestMethod -Uri https://loripsum.net/api/10/short/headers }
+$filecontent = 0..100 | ForEach-Object { Invoke-RestMethod -Uri 'https://baconipsum.com/api/?type=meat-and-filler&paras=5' }
 
 $directory = "C:\temp\perf"
 if (-not (Test-Path $directory)) {
@@ -224,17 +232,19 @@ Get-ChildItem -Path $directory
 
 # lets do some file content searching
 
+$SearchTerm = 'ribs'
+
 # Get-Content can read a file contents into memory,
 
-Get-Content -Path "$($directory)\file0.txt" | Select-String "quidem"
+Get-Content -Path "$($directory)\file00.txt" | Select-String $SearchTerm
 
 # but it is not the best way to search for a string in a bunch of files.
 
 $GetContent = Trace-Script -ScriptBlock { Get-ChildItem $directory |
     Get-Content |
-    Select-String "quidem"
+    Select-String $SearchTerm
 }
-$SelectString = Trace-Script -ScriptBlock { Get-ChildItem $directory | Select-String "quidem" }
+$SelectString = Trace-Script -ScriptBlock { Get-ChildItem $directory | Select-String $SearchTerm }
 
 $GetContent.TotalDuration.Milliseconds
 
@@ -259,6 +269,7 @@ $arrayList = Trace-Script -ScriptBlock {
 $plusequals.TotalDuration.Milliseconds
 $arrayList.TotalDuration.Milliseconds
 
+## SMO Performance
 
 $dbaInstance = Connect-DbaInstance -SqlInstance sql1
 
@@ -344,13 +355,13 @@ $smocommandsql3.TotalDuration.TotalMilliseconds
 
 
 
-                #Test-DbaMaxDop needs these because it checks every database as well
-                $DatabaseInitFields.Add("IsAccessible") | Out-Null # so we can check if its accessible
-                $DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
-                $DatabaseInitFields.Add("MaxDop ") | Out-Null # so we can check if its accessible
-                $DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
-                $Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
-                $DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
+#Test-DbaMaxDop needs these because it checks every database as well
+$DatabaseInitFields.Add("IsAccessible") | Out-Null # so we can check if its accessible
+$DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
+$DatabaseInitFields.Add("MaxDop ") | Out-Null # so we can check if its accessible
+$DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
+$Instance.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database], $DatabaseInitFields)
+$DatabaseInitFields = $Instance.GetDefaultInitFields([Microsoft.SqlServer.Management.Smo.Database]) #  I think we need to re-initialise here
 
 # use t-sql sometimes
 

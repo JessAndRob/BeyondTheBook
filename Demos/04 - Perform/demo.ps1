@@ -214,7 +214,12 @@ $whatamI.Column1 -eq [System.DBNull]::Value
 
 $filecontent = 0..100 | ForEach-Object { Invoke-RestMethod -Uri 'https://baconipsum.com/api/?type=meat-and-filler&paras=5' }
 
+if ($IsWindows){
 $directory = "C:\temp\perf"
+}elseif ($IsLinux){
+$directory = "/tmp/perf"
+}
+
 if (-not (Test-Path $directory)) {
     New-Item -Path $directory -ItemType Directory
 } else {
@@ -223,7 +228,7 @@ if (-not (Test-Path $directory)) {
 0..10 | ForEach-Object {
     $loop = $_
     0..100 | ForEach-Object {
-        $filename = "{0}\file{1}{2}.txt" -f $directory, $loop, $_
+        $filename = "{0}{3}file{1}{2}.txt" -f $directory, $loop, $_,[IO.Path]::DirectorySeparatorChar
         $filecontent[$_] | Set-Content -Path $filename
     }
 }
@@ -236,7 +241,7 @@ $SearchTerm = 'ribs'
 
 # Get-Content can read a file contents into memory,
 
-Get-Content -Path "$($directory)\file00.txt" | Select-String $SearchTerm
+Get-Content -Path "$($directory)$([IO.Path]::DirectorySeparatorChar)file00.txt" | Select-String "bacon"
 
 # but it is not the best way to search for a string in a bunch of files.
 

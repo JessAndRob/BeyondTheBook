@@ -1,4 +1,4 @@
-# we need a module and then to install PowerShell Universla
+# we need a module and then to install PowerShell Universal
 # as admin
 Install-Module Universal
 Install-PSUServer # installs universal as a service so need to run this as admin

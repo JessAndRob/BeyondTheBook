@@ -13,6 +13,8 @@ cls
 
 # Lets take a look at the databases on the first instance
 
+$dbatools1 = 'sql3'
+
 Get-DbaDatabase -SqlInstance $dbatools1
 
 # we can get particular properties 
@@ -25,22 +27,28 @@ Get-DbaDatabase -SqlInstance $dbatools1 | Get-Member
 
 # Lets check the file system from the viewpoint of the SQL Instance Service Account
 
-Get-DbaFile -SqlInstance $dbatools1 -Path /var/opt/mssql/data/backups/firstbackup
+$sql1 = Connect-DbaInstance -SqlInstance $DBATOOLS1 
+$BackupPath = $sql1.BackupDirectory
 
+Get-DbaFile -SqlInstance $dbatools1 -Path $BackupPath
+
+<#
 # not like ls ;-)
 
 ls /var/opt/mssql/data/backups/firstbackup
 
 ls /var/opt/mssql/data
 
+#>
+
 # No result means nothing to see - Lets back up the entire instance in one quick line of code
 
-Backup-DbaDatabase -SqlInstance $dbatools1 -Path /var/opt/mssql/data/backups/firstbackup
-Backup-DbaDatabase -SqlInstance $dbatools1 -Path /var/opt/mssql/data/backups/firstbackup -Type Log
+Backup-DbaDatabase -SqlInstance $dbatools1 -Path $BackupPath
+Backup-DbaDatabase -SqlInstance $dbatools1 -Path $BackupPath -Type Log
 
 # Lets check the file system from the viewpoint of the SQL Instance Service Account again
 
-Get-DbaFile -SqlInstance $dbatools1 -Path /var/opt/mssql/data/backups/firstbackup
+Get-DbaFile -SqlInstance $dbatools1 -Path $BackupPath
 
 # and from the OS just so you can see there is nothing up our sleeves
 

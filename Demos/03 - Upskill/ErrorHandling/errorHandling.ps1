@@ -51,25 +51,20 @@ catch {
 # and we can handle specific errors
 try {
     New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
-}
-catch [System.UnauthorizedAccessException] {
+} catch [System.UnauthorizedAccessException] {
     Write-Error "You do not have permission to create the file"
-}
-catch [System.IO.IOException] {
+} catch [System.IO.IOException] {
     Write-Error "The file already exists"
-}
-catch {
+} catch {
     Write-Error "An error occurred: $_"
 }
 
 # we can also have a finally block that will always run
 try {
     New-Item -Path "C:\Temp\test.txt" -ItemType File -ErrorAction Stop
-}
-catch {
+} catch {
     Write-Error "An error occurred: $_"
-}
-finally {
+} finally {
     Write-Host "This will always run"
 }
 
@@ -137,10 +132,12 @@ code 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv'
 
 # which means we can also filter it
-Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' | Where-Object Level -eq 'Critical'
+Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' | 
+Where-Object Level -eq 'Critical'
 
 # or group it 
-Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' | Group-Object Level
+Import-CSV 'C:\github\BeyondTheBook\Demos\03 - Upskill\ErrorHandling\log.csv' |
+Group-Object Level
 
 # lets turn off the logging provider so we don't log the rest of the precon
 Set-PSFLoggingProvider -Name logfile -Enabled $false

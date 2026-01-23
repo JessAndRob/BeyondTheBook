@@ -276,9 +276,9 @@ $arrayList.TotalDuration.Milliseconds
 
 ## SMO Performance
 
-$dbaInstance = Connect-DbaInstance -SqlInstance sql1
+$dbaInstance = Connect-DbaInstance -SqlInstance sql3
 
-$instance = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql1'
+$instance = New-Object Microsoft.SqlServer.Management.Smo.Server 'sql3'
 
 $dbaInstance.gettype()
 $Instance.gettype()
@@ -301,10 +301,10 @@ $DatabaseInitFields.Add("Name ") | Out-Null # so we can check if its accessible
 $DatabaseInitFields.Add("IsSystemObject ") | Out-Null # so we can check if its accessible
 
 $dbacommand = Trace-Script -ScriptBlock {
-    Get-DbaDatabase -SqlInstance sql1
+    Get-DbaDatabase -SqlInstance sql3
 }
 $dbaquerycommand = Trace-Script -ScriptBlock {
-    Invoke-DbaQuery -SqlInstance sql1 -Database master -Query "SELECT name FROM sys.databases"
+    Invoke-DbaQuery -SqlInstance sql3 -Database master -Query "SELECT name FROM sys.databases"
 }
 $smocommand = Trace-Script -ScriptBlock {
     $instance.Databases.Name

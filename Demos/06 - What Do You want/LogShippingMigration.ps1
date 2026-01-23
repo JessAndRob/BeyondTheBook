@@ -1,4 +1,5 @@
-## This is a demo to setup log shipping from one source to 2 destinations, with the goal of then joining them to an AG
+## This is a demo to setup log shipping from one source to 2 destinations, 
+#with the goal of then joining them to an AG
 
 # get a database
 
